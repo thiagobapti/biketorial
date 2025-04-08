@@ -1,0 +1,31 @@
+//Responsive
+$tablet-min-width: 768px;
+$desktop-min-width: 1024px;
+$large-min-width: 1440px;
+
+// Breakpoints
+@mixin tablet {
+  @media (min-width: #{$tablet-min-width}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$desktop-min-width}) {
+    @content;
+  }
+}
+
+@mixin large {
+  @media (min-width: #{$large-min-width}) {
+    @content;
+  }
+}
+
+@mixin thin-scrollbar {
+  scrollbar-width: thin;
+}
+
+@function z-index($key) {
+  @return map-get($z-index, $key);
+}
