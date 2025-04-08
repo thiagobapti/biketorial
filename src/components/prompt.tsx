@@ -1,6 +1,7 @@
 import Image from "next/image";
 import "./prompt.scss";
 import { useCallback, useState } from "react";
+import Step from "./step";
 const block = "prompt";
 
 type Option = {
@@ -60,28 +61,10 @@ export default function Prompt({
 
   return (
     <div className={block}>
-      <div className={`${block}__step`}>
-        <h1>{project.steps[currentStep].title}</h1>
-        <p>{project.steps[currentStep].description}</p>
-        <div className={`${block}__step-options`}>
-          {project.steps[currentStep].options.map((option, index) => (
-            <div
-              className={`${block}__step-option`}
-              key={index}
-              onClick={() => handleOptionSelected(index)}
-            >
-              <h2>{option.title}</h2>
-              <p>{option.description}</p>
-              <Image
-                src={option.image}
-                alt={option.title}
-                width={48}
-                height={48}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <Step
+        step={project.steps[currentStep]}
+        handleOptionSelected={handleOptionSelected}
+      />
     </div>
   );
 }

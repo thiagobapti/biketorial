@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import "./page.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Prompt from "@/components/prompt";
 import Working from "@/components/working";
 import Preview from "@/components/preview";
@@ -15,7 +15,7 @@ type Option = {
   selected: boolean;
 };
 
-type Step = {
+export type Step = {
   title: string;
   description: string;
   options: Option[];
@@ -199,6 +199,16 @@ export default function BuilderPage() {
       setState(State.Prompt);
     }
   };
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      const response = await fetch("/api/features");
+      const features = await response.json();
+      console.log(features);
+    };
+    fetchFeatures();
+  }, []);
+
   return (
     <div className={block}>
       {state === State.Prompt && (

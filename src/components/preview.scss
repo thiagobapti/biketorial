@@ -1,1 +1,19 @@
+$block: "preview";
 
+.preview {
+  display: flex;
+  flex-direction: row;
+
+  &__toolbar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__viewport {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+}
