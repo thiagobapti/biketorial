@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     additionalData: `@use "@/styles/shared.scss" as *;`,
   },
   images: {
-    domains: ["placehold.co"],
+    domains: ["placehold.co", "oaidalleapiprodscus.blob.core.windows.net"],
   },
 };
 

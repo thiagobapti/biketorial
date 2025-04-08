@@ -16,154 +16,31 @@ type Step = {
   options: Option[];
 };
 
+type Project = {
+  title: string;
+  steps: Step[];
+};
+
 type Props = {
+  project: Project;
+  setProject: (project: Project) => void;
   completeCallback: () => void;
 };
 
-export default function Prompt({ completeCallback }: Props) {
+export default function Prompt({
+  project,
+  setProject,
+  completeCallback,
+}: Props) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [steps, setSteps] = useState<Step[]>([
-    {
-      title: "Color",
-      description: "",
-      options: [
-        {
-          title: "Red",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Red",
-          selected: false,
-        },
-        {
-          title: "Blue",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Blue",
-          selected: false,
-        },
-        {
-          title: "Green",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Green",
-          selected: false,
-        },
-      ],
-    },
-    {
-      title: "Frame type",
-      description: "Choose the frame type you want to use",
-      options: [
-        {
-          title: "Full-suspension",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Full+suspension",
-          selected: false,
-        },
-        {
-          title: "Diamond",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Diamond",
-          selected: false,
-        },
-        {
-          title: "Step-through",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Step+through",
-          selected: false,
-        },
-      ],
-    },
-    {
-      title: "Frame finish",
-      description: "Choose the frame finish you want to use",
-      options: [
-        {
-          title: "Matte",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Matte",
-          selected: false,
-        },
-        {
-          title: "Shiny",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Shiny",
-          selected: false,
-        },
-      ],
-    },
-    {
-      title: "Wheels",
-      description: "Choose the wheels you want to use",
-      options: [
-        {
-          title: "Road wheels",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Road+wheels",
-          selected: false,
-        },
-        {
-          title: "Mountain wheels",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Mountain+wheels",
-          selected: false,
-        },
-        {
-          title: "Fat bike wheels",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Fat+bike+wheels",
-          selected: false,
-        },
-      ],
-    },
-    {
-      title: "Rim color",
-      description: "Choose the rim color you want to use",
-      options: [
-        {
-          title: "Red",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Red",
-          selected: false,
-        },
-        {
-          title: "Black",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Black",
-          selected: false,
-        },
-        {
-          title: "Blue",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Blue",
-          selected: false,
-        },
-      ],
-    },
-    {
-      title: "Chain",
-      description: "Choose the chain you want to use",
-      options: [
-        {
-          title: "Single-speed chain",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=Single-speed+chain",
-          selected: false,
-        },
-        {
-          title: "8-speed chain",
-          description: "",
-          image: "https://placehold.co/48x48/png?text=8-speed+chain",
-          selected: false,
-        },
-      ],
-    },
-  ]);
 
   const handleOptionSelected = useCallback(
     (index: number) => {
-      if (currentStep === steps.length - 1) {
+      if (currentStep === project.steps.length - 1) {
         completeCallback();
         return;
       }
-      const newSteps = steps.map((step, stepIndex) => {
+      const newSteps = project.steps.map((step, stepIndex) => {
         if (stepIndex === currentStep) {
           return {
             ...step,
@@ -175,19 +52,19 @@ export default function Prompt({ completeCallback }: Props) {
         }
         return step;
       });
-      setSteps(newSteps);
+      setProject({ ...project, steps: newSteps });
       setCurrentStep(currentStep + 1);
     },
-    [completeCallback, currentStep, steps]
+    [completeCallback, currentStep, project, setProject]
   );
 
   return (
     <div className={block}>
       <div className={`${block}__step`}>
-        <h1>{steps[currentStep].title}</h1>
-        <p>{steps[currentStep].description}</p>
+        <h1>{project.steps[currentStep].title}</h1>
+        <p>{project.steps[currentStep].description}</p>
         <div className={`${block}__step-options`}>
-          {steps[currentStep].options.map((option, index) => (
+          {project.steps[currentStep].options.map((option, index) => (
             <div
               className={`${block}__step-option`}
               key={index}
