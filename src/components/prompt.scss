@@ -1,0 +1,11 @@
+$block: "prompt";
+
+.prompt {
+  &__step-nav {
+    text-decoration: underline;
+
+    &--active {
+      background-color: red;
+    }
+  }
+}

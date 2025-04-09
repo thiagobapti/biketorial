@@ -9,15 +9,14 @@ import Preview from "@/components/preview";
 const block = "builder-page";
 
 type Option = {
-  title: string;
-  description: string;
-  image: string;
+  id: string;
+  label: string;
   selected: boolean;
 };
 
 export type Step = {
-  title: string;
-  description: string;
+  id: string;
+  label: string;
   options: Option[];
 };
 
@@ -33,145 +32,8 @@ export default function BuilderPage() {
     Working = "working",
     Preview = "preview",
   }
-  const [state, setState] = useState<State>(State.Prompt);
-  const [project, setProject] = useState<Project>({
-    title: "Bicycle",
-    steps: [
-      {
-        title: "Color",
-        description: "",
-        options: [
-          {
-            title: "Red",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Red",
-            selected: false,
-          },
-          {
-            title: "Blue",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Blue",
-            selected: false,
-          },
-          {
-            title: "Green",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Green",
-            selected: false,
-          },
-        ],
-      },
-      {
-        title: "Frame type",
-        description: "Choose the frame type you want to use",
-        options: [
-          {
-            title: "Full-suspension",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Full+suspension",
-            selected: false,
-          },
-          {
-            title: "Diamond",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Diamond",
-            selected: false,
-          },
-          {
-            title: "Step-through",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Step+through",
-            selected: false,
-          },
-        ],
-      },
-      {
-        title: "Frame finish",
-        description: "Choose the frame finish you want to use",
-        options: [
-          {
-            title: "Matte",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Matte",
-            selected: false,
-          },
-          {
-            title: "Shiny",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Shiny",
-            selected: false,
-          },
-        ],
-      },
-      {
-        title: "Wheels",
-        description: "Choose the wheels you want to use",
-        options: [
-          {
-            title: "Road wheels",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Road+wheels",
-            selected: false,
-          },
-          {
-            title: "Mountain wheels",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Mountain+wheels",
-            selected: false,
-          },
-          {
-            title: "Fat bike wheels",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Fat+bike+wheels",
-            selected: false,
-          },
-        ],
-      },
-      {
-        title: "Rim color",
-        description: "Choose the rim color you want to use",
-        options: [
-          {
-            title: "Red",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Red",
-            selected: false,
-          },
-          {
-            title: "Black",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Black",
-            selected: false,
-          },
-          {
-            title: "Blue",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Blue",
-            selected: false,
-          },
-        ],
-      },
-      {
-        title: "Chain",
-        description: "Choose the chain you want to use",
-        options: [
-          {
-            title: "Single-speed chain",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=Single-speed+chain",
-            selected: false,
-          },
-          {
-            title: "8-speed chain",
-            description: "",
-            image: "https://placehold.co/48x48/png?text=8-speed+chain",
-            selected: false,
-          },
-        ],
-      },
-    ],
-  });
-
+  const [state, setState] = useState<State>(State.Working);
+  const [project, setProject] = useState<Project>();
   const handlePromptComplete = async () => {
     setState(State.Working);
 
@@ -188,7 +50,7 @@ export default function BuilderPage() {
       console.log(result);
 
       if (result.success) {
-        setProject({ ...project, image: result.imageUrl });
+        // setProject({ ...project, image: result.imageUrl });
         setState(State.Preview);
       } else {
         console.error("Error building bicycle:", result.error);
@@ -203,15 +65,20 @@ export default function BuilderPage() {
   useEffect(() => {
     const fetchFeatures = async () => {
       const response = await fetch("/api/features");
-      const features = await response.json();
-      console.log(features);
+      const options = await response.json();
+      console.log("options", options);
+      setState(State.Prompt);
+      setProject({
+        title: "No title",
+        steps: options,
+      });
     };
     fetchFeatures();
-  }, []);
+  }, [State.Prompt]);
 
   return (
     <div className={block}>
-      {state === State.Prompt && (
+      {state === State.Prompt && project && (
         <Prompt
           project={project}
           setProject={setProject}
@@ -219,7 +86,7 @@ export default function BuilderPage() {
         />
       )}
       {state === State.Working && <Working />}
-      {state === State.Preview && <Preview project={project} />}
+      {state === State.Preview && project && <Preview project={project} />}
     </div>
   );
 }

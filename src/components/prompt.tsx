@@ -2,25 +2,9 @@ import Image from "next/image";
 import "./prompt.scss";
 import { useCallback, useState } from "react";
 import Step from "./step";
+import { Project } from "@/app/builder/page";
+import cn from "classnames";
 const block = "prompt";
-
-type Option = {
-  title: string;
-  description: string;
-  image: string;
-  selected: boolean;
-};
-
-type Step = {
-  title: string;
-  description: string;
-  options: Option[];
-};
-
-type Project = {
-  title: string;
-  steps: Step[];
-};
 
 type Props = {
   project: Project;
@@ -37,10 +21,6 @@ export default function Prompt({
 
   const handleOptionSelected = useCallback(
     (index: number) => {
-      if (currentStep === project.steps.length - 1) {
-        completeCallback();
-        return;
-      }
       const newSteps = project.steps.map((step, stepIndex) => {
         if (stepIndex === currentStep) {
           return {
@@ -54,13 +34,30 @@ export default function Prompt({
         return step;
       });
       setProject({ ...project, steps: newSteps });
-      setCurrentStep(currentStep + 1);
+
+      if (currentStep === project.steps.length - 1) {
+        completeCallback();
+      } else {
+        setCurrentStep(currentStep + 1);
+      }
     },
     [completeCallback, currentStep, project, setProject]
   );
 
   return (
     <div className={block}>
+      <div>
+        {project.steps.map((step, index) => (
+          <div
+            className={cn(`${block}__step-nav`, {
+              [`${block}__step-nav--active`]: index === currentStep,
+            })}
+            key={index}
+          >
+            {step.label}
+          </div>
+        ))}
+      </div>
       <Step
         step={project.steps[currentStep]}
         handleOptionSelected={handleOptionSelected}

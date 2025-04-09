@@ -41,8 +41,25 @@ export async function getFeatures() {
     await client.sql`BEGIN`;
 
     const result = await client.sql`
-      SELECT * FROM bike_builder_features
+      SELECT 
+      bike_builder_features.*,
+        COALESCE(
+          jsonb_agg(
+            jsonb_build_object(
+              'id', o.id,
+              'label', o.label
+            ) 
+            ORDER BY o.label
+          ) FILTER (WHERE o.id IS NOT NULL),
+          '[]'::jsonb
+        ) as options
+      FROM bike_builder_features
+      LEFT JOIN bike_builder_options o ON o.id_feature = bike_builder_features.id
+      GROUP BY bike_builder_features.id
+      ORDER BY bike_builder_features.order
     `;
+
+    console.log(result.rows);
 
     await client.sql`COMMIT`;
     return result.rows;
