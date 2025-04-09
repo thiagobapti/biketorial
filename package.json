@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",
+    "classnames": "^2.5.1",
     "next": "15.2.4",
     "openai": "^4.92.1",
     "react": "^19.0.0",
