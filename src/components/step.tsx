@@ -1,24 +1,24 @@
 import Image from "next/image";
 import "./step.scss";
-import { Step as StepType } from "@/app/builder/page";
+import { Feature as FeatureType, Part } from "@/app/builder/page";
 import cn from "classnames";
 
 type Props = {
-  step: StepType;
+  feature: FeatureType;
   handleOptionSelected: (index: number) => void;
 };
 
 const block = "step";
-export default function Step({ step, handleOptionSelected }: Props) {
-  console.log(step);
+export default function Step({ feature, handleOptionSelected }: Props) {
+  console.log(feature);
   return (
     <div className={`${block}`}>
-      <h1>{step.label}</h1>
+      <h1>{feature.label}</h1>
       <div className={`${block}__step-options`}>
-        {step.options.map((option, index) => (
+        {feature.parts.map((part: Part, index: number) => (
           <div
             className={cn(`${block}__step-option`, {
-              [`${block}__step-option--selected`]: option.selected,
+              [`${block}__step-option--selected`]: part.selected,
             })}
             key={index}
             onClick={() => handleOptionSelected(index)}
@@ -30,7 +30,7 @@ export default function Step({ step, handleOptionSelected }: Props) {
               width={48}
               height={48}
             /> */}
-            <div>{option.label}</div>
+            <div>{part.label}</div>
           </div>
         ))}
       </div>

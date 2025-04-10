@@ -1,30 +1,30 @@
 const block = "preview";
 
-import { Project } from "@/app/builder/page";
+import { Builder } from "@/app/builder/page";
 import "./preview.scss";
 import Image from "next/image";
 import Step from "./step";
 
 type Props = {
-  project: Project;
+  builder: Builder;
 };
 
-export default function Preview({ project }: Props) {
+export default function Preview({ builder }: Props) {
   return (
     <div className={block}>
       <div className={`${block}__viewport`}>
-        {project?.image && (
+        {builder?.image && (
           <Image
-            src={project.image}
-            alt={project.title}
+            src={builder.image}
+            alt={builder.label}
             width={512}
             height={512}
           />
         )}
       </div>
       <div className={`${block}__toolbar`}>
-        {project.steps.map((step, index) => (
-          <Step step={step} key={index} handleOptionSelected={() => {}} />
+        {builder.features.map((feature, index) => (
+          <Step feature={feature} key={index} handleOptionSelected={() => {}} />
         ))}
       </div>
     </div>

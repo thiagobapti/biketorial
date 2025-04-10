@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getFeatures } from "@/backend/builder";
+import { getBuilder } from "@/backend/builder";
 
 export async function GET(request: NextRequest) {
   try {
-    const result = await getFeatures();
+    const result = await getBuilder();
 
     return NextResponse.json(result);
   } catch (error) {

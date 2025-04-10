@@ -8,21 +8,28 @@ import Working from "@/components/working";
 import Preview from "@/components/preview";
 const block = "builder-page";
 
-type Option = {
+export type Part = {
   id: string;
   label: string;
   selected: boolean;
 };
 
-export type Step = {
+export type Modifier = {
   id: string;
   label: string;
-  options: Option[];
+  selected: boolean;
 };
 
-export type Project = {
-  title: string;
-  steps: Step[];
+export type Feature = {
+  id: string;
+  label: string;
+  parts: Part[];
+  modifiers: Modifier[];
+};
+
+export type Builder = {
+  label: string;
+  features: Feature[];
   image?: string;
 };
 
@@ -33,7 +40,7 @@ export default function BuilderPage() {
     Preview = "preview",
   }
   const [state, setState] = useState<State>(State.Working);
-  const [project, setProject] = useState<Project>();
+  const [builder, setBuilder] = useState<Builder>();
   const handlePromptComplete = async () => {
     setState(State.Working);
 
@@ -43,7 +50,7 @@ export default function BuilderPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ project }),
+        body: JSON.stringify({ builder }),
       });
 
       const result = await response.json();
@@ -64,29 +71,26 @@ export default function BuilderPage() {
 
   useEffect(() => {
     const fetchFeatures = async () => {
-      const response = await fetch("/api/features");
-      const options = await response.json();
-      console.log("options", options);
+      const response = await fetch("/api/builder");
+      const builder = await response.json();
+      console.log("builder", builder);
       setState(State.Prompt);
-      setProject({
-        title: "No title",
-        steps: options,
-      });
+      setBuilder(builder);
     };
     fetchFeatures();
   }, [State.Prompt]);
 
   return (
     <div className={block}>
-      {state === State.Prompt && project && (
+      {state === State.Prompt && builder && (
         <Prompt
-          project={project}
-          setProject={setProject}
+          builder={builder}
+          setBuilder={setBuilder}
           completeCallback={handlePromptComplete}
         />
       )}
       {state === State.Working && <Working />}
-      {state === State.Preview && project && <Preview project={project} />}
+      {state === State.Preview && builder && <Preview builder={builder} />}
     </div>
   );
 }

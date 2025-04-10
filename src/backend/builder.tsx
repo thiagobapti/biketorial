@@ -32,7 +32,7 @@ export async function build() {
   }
 }
 
-export async function getFeatures() {
+export async function getBuilder() {
   const client = createClient({
     connectionString: process.env.POSTGRES_URL_NON_POOLING,
   });
@@ -41,25 +41,25 @@ export async function getFeatures() {
     await client.sql`BEGIN`;
 
     const featuresResult = await client.sql`
-      SELECT * FROM builder_features
+      SELECT builders.*, json_agg(builder_features) as features FROM builders
+      LEFT JOIN builder_features ON builder_features.id_builder = builders.id
+      GROUP BY builders.id
     `;
 
-    for (const feature of featuresResult.rows) {
-      const partsResult = await client.sql`
-        SELECT * FROM parts
-        WHERE id_category = ${feature.id_category}
-      `;
+    // for (const feature of featuresResult.rows) {
+    //   const partsResult = await client.sql`
+    //     SELECT * FROM parts
+    //     WHERE id_category = ${feature.id_category}
+    //   `;
 
-      // for (const part of partsResult.rows) {
-      const modifiersResult = await client.sql`
-          SELECT * FROM modifiers
-          WHERE id_category = ${feature.id_category}
-        `;
-      feature.modifiers = modifiersResult.rows;
-      // }
+    //   const modifiersResult = await client.sql`
+    //       SELECT * FROM modifiers
+    //       WHERE id_category = ${feature.id_category}
+    //     `;
+    //   feature.modifiers = modifiersResult.rows;
 
-      feature.parts = partsResult.rows;
-    }
+    //   feature.parts = partsResult.rows;
+    // }
 
     await client.sql`COMMIT`;
     return featuresResult.rows;

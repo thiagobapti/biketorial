@@ -55,6 +55,8 @@ export async function getParts() {
         parts
       LEFT JOIN
         categories ON parts.id_category = categories.id
+      ORDER BY
+        parts.quantity_sold DESC
     `;
 
     await client.sql`COMMIT`;

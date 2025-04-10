@@ -19,6 +19,8 @@ type Part = {
   category: Category;
   regular_price: number;
   discount_price: number;
+  quantity_sold: number;
+  quantity_available: number;
 };
 
 export default function Page() {
@@ -57,6 +59,9 @@ export default function Page() {
       ))}
       {parts.map((part) => (
         <div className={`${block}__part`} key={part.id}>
+          {!part.quantity_available && (
+            <div style={{ color: "red" }}>Out of stock</div>
+          )}
           {part.category.label}
           <br />
           {part.label}
