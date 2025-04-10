@@ -46,7 +46,7 @@ export default function Prompt({
 
   return (
     <div className={block}>
-      <div>
+      {/* <div>
         {project.steps.map((step, index) => (
           <div
             className={cn(`${block}__step-nav`, {
@@ -61,7 +61,7 @@ export default function Prompt({
       <Step
         step={project.steps[currentStep]}
         handleOptionSelected={handleOptionSelected}
-      />
+      /> */}
     </div>
   );
 }

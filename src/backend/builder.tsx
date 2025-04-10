@@ -40,33 +40,33 @@ export async function getFeatures() {
     await client.connect();
     await client.sql`BEGIN`;
 
-    const result = await client.sql`
-      SELECT 
-      bike_builder_features.*,
-        COALESCE(
-          jsonb_agg(
-            jsonb_build_object(
-              'id', o.id,
-              'label', o.label
-            ) 
-            ORDER BY o.label
-          ) FILTER (WHERE o.id IS NOT NULL),
-          '[]'::jsonb
-        ) as options
-      FROM bike_builder_features
-      LEFT JOIN bike_builder_options o ON o.id_feature = bike_builder_features.id
-      GROUP BY bike_builder_features.id
-      ORDER BY bike_builder_features.order
+    const featuresResult = await client.sql`
+      SELECT * FROM builder_features
     `;
 
-    console.log(result.rows);
+    for (const feature of featuresResult.rows) {
+      const partsResult = await client.sql`
+        SELECT * FROM parts
+        WHERE id_category = ${feature.id_category}
+      `;
+
+      // for (const part of partsResult.rows) {
+      const modifiersResult = await client.sql`
+          SELECT * FROM modifiers
+          WHERE id_category = ${feature.id_category}
+        `;
+      feature.modifiers = modifiersResult.rows;
+      // }
+
+      feature.parts = partsResult.rows;
+    }
 
     await client.sql`COMMIT`;
-    return result.rows;
+    return featuresResult.rows;
   } catch (error: unknown) {
     await client.sql`ROLLBACK`;
     console.error(
-      "[ signup ]",
+      "[ getFeatures ]",
       error instanceof Error ? error.message : String(error)
     );
     return false;
@@ -74,3 +74,45 @@ export async function getFeatures() {
     await client.end();
   }
 }
+// export async function getFeatures() {
+//   const client = createClient({
+//     connectionString: process.env.POSTGRES_URL_NON_POOLING,
+//   });
+//   try {
+//     await client.connect();
+//     await client.sql`BEGIN`;
+
+//     const result = await client.sql`
+//       SELECT
+//       bike_builder_features.*,
+//         COALESCE(
+//           jsonb_agg(
+//             jsonb_build_object(
+//               'id', o.id,
+//               'label', o.label
+//             )
+//             ORDER BY o.label
+//           ) FILTER (WHERE o.id IS NOT NULL),
+//           '[]'::jsonb
+//         ) as options
+//       FROM bike_builder_features
+//       LEFT JOIN bike_builder_options o ON o.id_feature = bike_builder_features.id
+//       GROUP BY bike_builder_features.id
+//       ORDER BY bike_builder_features.order
+//     `;
+
+//     console.log(result.rows);
+
+//     await client.sql`COMMIT`;
+//     return result.rows;
+//   } catch (error: unknown) {
+//     await client.sql`ROLLBACK`;
+//     console.error(
+//       "[ signup ]",
+//       error instanceof Error ? error.message : String(error)
+//     );
+//     return false;
+//   } finally {
+//     await client.end();
+//   }
+// }

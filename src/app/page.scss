@@ -1,0 +1,15 @@
+$block: "page";
+
+.#{$block} {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.#{$block}__part {
+  border: solid 2px #373737;
+  padding: 1rem;
+  border-radius: 10px;
+  height: 200px;
+  width: 100px;
+}
