@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import "./page.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 
 import cn from "classnames";
+import { CartContext } from "@/contexts/cart";
 const block = "builder-page";
 
 export type Restriction = {
@@ -40,6 +41,7 @@ export default function BuilderPage() {
   const [builder, setBuilder] = useState<any>();
   const [price, setPrice] = useState(0);
   const [shouldCalculatePrices, setShouldCalculatePrices] = useState(false);
+  const cartContext = useContext(CartContext);
 
   // Helper function to collect all restrictions from the builder
   const collectAllRestrictions = (builder: any): Restriction[] => {
@@ -215,43 +217,66 @@ export default function BuilderPage() {
     setShouldCalculatePrices(false);
   }, [shouldCalculatePrices]);
 
+  const handleAddToCart = () => {
+    cartContext.updateItems([
+      {
+        builder: builder,
+        price: price,
+        selectedParts: builder.features.flatMap((feature: any) =>
+          feature.parts.filter((part: any) => part.selected)
+        ),
+      },
+    ]);
+  };
+
   return (
     <div className={block}>
-      <div className={`${block}__toolbar`}>
-        <div className={`${block}__toolbar-header`}>
-          <div className={`${block}__toolbar-header-label`}>
-            {builder?.label}-{price}
+      <div className={`${block}__container container`}>
+        <div className={`${block}__toolbar`}>
+          <div className={`${block}__toolbar-header`}>
+            <div className={`${block}__toolbar-header-label`}>
+              {builder?.label}-{price}
+            </div>
           </div>
-        </div>
-        <div className={`${block}__toolbar-body`}>
-          {builder?.features.map((feature: any) => (
-            <div className={`${block}__toolbar-feature`} key={feature.id}>
-              <div className={`${block}__toolbar-feature-category`}>
-                <div className={`${block}__toolbar-feature-category-label`}>
-                  {feature.category.label}
-                </div>
-                <div className={`${block}__toolbar-feature-parts`}>
-                  {feature.parts?.map((part: any) => (
-                    <div
-                      className={cn(`${block}__toolbar-feature-part`, {
-                        [`${block}__toolbar-feature-part--disabled`]:
-                          part.disabled,
-                        [`${block}__toolbar-feature-part--selected`]:
-                          part.selected,
-                      })}
-                      key={part.id}
-                      onClick={() => handlePartSelection(part, feature)}
-                    >
-                      {part.label}-{part.priceValue || 0}
-                    </div>
-                  ))}
+          <div className={`${block}__toolbar-actions`}>
+            <button className={`${block}__toolbar-actions-button`}>View</button>
+            <button
+              className={`${block}__toolbar-actions-button`}
+              onClick={handleAddToCart}
+            >
+              Add to cart
+            </button>
+          </div>
+          <div className={`${block}__toolbar-body`}>
+            {builder?.features.map((feature: any) => (
+              <div className={`${block}__toolbar-feature`} key={feature.id}>
+                <div className={`${block}__toolbar-feature-category`}>
+                  <div className={`${block}__toolbar-feature-category-label`}>
+                    {feature.category.label}
+                  </div>
+                  <div className={`${block}__toolbar-feature-parts`}>
+                    {feature.parts?.map((part: any) => (
+                      <div
+                        className={cn(`${block}__toolbar-feature-part`, {
+                          [`${block}__toolbar-feature-part--disabled`]:
+                            part.disabled,
+                          [`${block}__toolbar-feature-part--selected`]:
+                            part.selected,
+                        })}
+                        key={part.id}
+                        onClick={() => handlePartSelection(part, feature)}
+                      >
+                        {part.label}-{part.priceValue || 0}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+        <div className={`${block}__preview`}>a</div>
       </div>
-      <div className={`${block}__preview`}>a</div>
     </div>
   );
 }

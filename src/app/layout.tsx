@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "../styles/index.scss";
 import { montserrat } from "../styles/fonts";
+import Head from "next/head";
+import Header from "@/components/header";
+import { CartContextProvider } from "@/contexts/cart";
 
 export const metadata: Metadata = {
   title: "Biketorial",
@@ -14,7 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable}`}>{children}</body>
+      <body className={`${montserrat.variable}`}>
+        <CartContextProvider>
+          <Header />
+          {children}
+        </CartContextProvider>
+      </body>
     </html>
   );
 }

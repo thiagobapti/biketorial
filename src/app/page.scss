@@ -4,6 +4,7 @@ $block: "page";
   display: flex;
   flex-direction: row;
   gap: 1rem;
+  margin-top: 60px;
 }
 
 .#{$block}__part {

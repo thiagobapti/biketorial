@@ -1,9 +1,13 @@
 $block: "builder-page";
 
 .#{$block} {
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
+  height: calc(100vh - 60px);
+  margin-top: 60px;
+
+  &__container {
+    display: flex;
+    flex-direction: row;
+  }
 
   &__preview {
     flex: 1;
@@ -15,7 +19,7 @@ $block: "builder-page";
   &__toolbar {
     width: 300px;
     background-color: #373737;
-    margin: 20px 0 20px 20px;
+    // margin: 20px 0 20px 20px;
     border-radius: 20px;
     padding: 10px;
   }
