@@ -41,25 +41,52 @@ export async function getBuilder() {
     await client.sql`BEGIN`;
 
     const featuresResult = await client.sql`
-      SELECT builders.*, json_agg(builder_features) as features FROM builders
+      SELECT 
+        builders.*,
+        json_agg(
+          jsonb_build_object(
+            'id', builder_features.id,
+            'order', builder_features."order",
+            'id_category', builder_features.id_category,
+            'id_builder', builder_features.id_builder,
+            'category', jsonb_build_object(
+              'id', categories.id,
+              'label', categories.label,
+              'description', categories.description
+            ),
+            'parts', (
+              SELECT json_agg(
+                jsonb_build_object(
+                  'id', parts.id,
+                  'label', parts.label,
+                  'quantity_available', parts.quantity_available,
+                  'quantity_sold', parts.quantity_sold,
+                  'pricing', (
+                    SELECT json_agg(
+                      jsonb_build_object(
+                        'id', pricing.id,
+                        'price', pricing.price,
+                        'original_price', pricing.original_price,
+                        'id_related_part', pricing.id_related_part,
+                        'except_related_part', pricing.except_related_part
+                      )
+                    )
+                    FROM public.pricing
+                    WHERE pricing.id_part = parts.id
+                  )
+                )
+              )
+              FROM public.parts
+              WHERE parts.id_category = builder_features.id_category
+            )
+          )
+          ORDER BY builder_features."order"
+        ) as features 
+      FROM builders
       LEFT JOIN builder_features ON builder_features.id_builder = builders.id
+      LEFT JOIN categories ON categories.id = builder_features.id_category
       GROUP BY builders.id
     `;
-
-    // for (const feature of featuresResult.rows) {
-    //   const partsResult = await client.sql`
-    //     SELECT * FROM parts
-    //     WHERE id_category = ${feature.id_category}
-    //   `;
-
-    //   const modifiersResult = await client.sql`
-    //       SELECT * FROM modifiers
-    //       WHERE id_category = ${feature.id_category}
-    //     `;
-    //   feature.modifiers = modifiersResult.rows;
-
-    //   feature.parts = partsResult.rows;
-    // }
 
     await client.sql`COMMIT`;
     return featuresResult.rows;
