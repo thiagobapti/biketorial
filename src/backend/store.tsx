@@ -46,18 +46,7 @@ export async function getParts() {
     const result = await client.sql`
       SELECT
         parts.*,
-        COALESCE(
-          jsonb_agg(
-            jsonb_build_object(
-              'id', pricing.id,
-              'price', pricing.price,
-              'original_price', pricing.original_price,
-              'id_related_part', pricing.id_related_part,
-              'except_related_part', pricing.except_related_part
-            )
-          ) FILTER (WHERE pricing.id_part = parts.id),
-          '[]'::jsonb
-        ) AS pricing,
+
         COALESCE(
           jsonb_agg(
             jsonb_build_object(
@@ -72,8 +61,6 @@ export async function getParts() {
         parts
       LEFT JOIN
         categories ON parts.id_category = categories.id
-      LEFT JOIN
-        pricing ON parts.id = pricing.id_part
       GROUP BY
         parts.id
       ORDER BY

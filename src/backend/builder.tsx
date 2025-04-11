@@ -61,6 +61,8 @@ export async function getBuilder() {
                   'label', parts.label,
                   'quantity_available', parts.quantity_available,
                   'quantity_sold', parts.quantity_sold,
+                  'base_price', parts.base_price,
+                  'price', parts.price,
                   'pricing', (
                     SELECT json_agg(
                       jsonb_build_object(
@@ -73,6 +75,17 @@ export async function getBuilder() {
                     )
                     FROM public.pricing
                     WHERE pricing.id_part = parts.id
+                  ),
+                  'restrictions', (
+                    SELECT json_agg(
+                      jsonb_build_object(
+                        'id_part', part_restrictions.id_part,
+                        'id_part_incompatible', part_restrictions.id_part_incompatible,
+                        'details', part_restrictions.details
+                      )
+                    )
+                    FROM public.part_restrictions
+                    WHERE part_restrictions.id_part = parts.id
                   )
                 )
               )

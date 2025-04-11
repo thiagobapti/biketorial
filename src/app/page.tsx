@@ -50,32 +50,34 @@ export default function Page() {
 
   return (
     <div className={block}>
-      Biketorial
-      <Link href="/builder">Builder</Link>
-      {categories.map((category) => (
-        <Link key={category.id} href={`/categories/${category.id}`}>
-          {category.label}
-        </Link>
-      ))}
-      {parts.map((part) => (
-        <div className={`${block}__part`} key={part.id}>
-          {!part.quantity_available && (
-            <div style={{ color: "red" }}>Out of stock</div>
-          )}
-          {part.category.label}
-          <br />
-          {part.label}
-          <br />
-          <span
-            style={{
-              textDecoration: part.discount_price ? "line-through" : "",
-            }}
-          >
-            {part.regular_price}
-          </span>
-          {part.discount_price && ` / ${part.discount_price}`}
-        </div>
-      ))}
+      <div className={`${block}__container container`}>
+        Biketorial
+        <Link href="/builder">Builder</Link>
+        {categories.map((category) => (
+          <Link key={category.id} href={`/categories/${category.id}`}>
+            {category.label}
+          </Link>
+        ))}
+        {parts.map((part) => (
+          <div className={`${block}__part`} key={part.id}>
+            {!part.quantity_available && (
+              <div style={{ color: "red" }}>Out of stock</div>
+            )}
+            {part.category.label}
+            <br />
+            {part.label}
+            <br />
+            <span
+              style={{
+                textDecoration: part.discount_price ? "line-through" : "",
+              }}
+            >
+              {part.regular_price}
+            </span>
+            {part.discount_price && ` / ${part.discount_price}`}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

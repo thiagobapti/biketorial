@@ -13,3 +13,11 @@ $block: "page";
   height: 200px;
   width: 100px;
 }
+
+.#{$block}__container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  border: solid 2px #373737;
+  flex-wrap: wrap;
+}

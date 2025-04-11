@@ -3,36 +3,34 @@
 import Image from "next/image";
 import "./page.scss";
 import { useCallback, useEffect, useState } from "react";
-import Prompt from "@/components/prompt";
-import Working from "@/components/working";
-import Preview from "@/components/preview";
+
 import cn from "classnames";
 const block = "builder-page";
 
-export type Part = {
-  id: string;
-  label: string;
-  selected: boolean;
+export type Restriction = {
+  id_part: string;
+  id_part_incompatible: string;
+  details: string | null;
 };
 
-export type Modifier = {
-  id: string;
-  label: string;
-  selected: boolean;
-};
+// export type Part = {
+//   id: string;
+//   label: string;
+//   selected: boolean;
+//   restrictions?: Restriction[];
+// };
 
-export type Feature = {
-  id: string;
-  label: string;
-  parts: Part[];
-  modifiers: Modifier[];
-};
+// export type Feature = {
+//   id: string;
+//   label: string;
+//   parts: Part[];
+// };
 
-export type Builder = {
-  label: string;
-  features: Feature[];
-  image?: string;
-};
+// export type Builder = {
+//   label: string;
+//   features: Feature[];
+//   image?: string;
+// };
 
 export default function BuilderPage() {
   enum State {
@@ -43,30 +41,108 @@ export default function BuilderPage() {
   const [price, setPrice] = useState(0);
   const [shouldCalculatePrices, setShouldCalculatePrices] = useState(false);
 
+  // Helper function to collect all restrictions from the builder
+  const collectAllRestrictions = (builder: any): Restriction[] => {
+    const allRestrictions: Restriction[] = [];
+
+    builder.features.forEach((feature: any) => {
+      feature.parts.forEach((part: any) => {
+        if (part.restrictions && Array.isArray(part.restrictions)) {
+          allRestrictions.push(...part.restrictions);
+        }
+      });
+    });
+
+    return allRestrictions;
+  };
+
+  // Helper function to find parts that should be disabled based on selected parts
+  const findPartsToDisable = (
+    selectedParts: any[],
+    allRestrictions: Restriction[]
+  ): Set<string> => {
+    const partsToDisable = new Set<string>();
+
+    selectedParts.forEach((selectedPart: any) => {
+      // Find restrictions where this part makes other parts incompatible
+      const incompatibilitiesAsSource = allRestrictions.filter(
+        (restriction) => restriction.id_part === selectedPart.id
+      );
+
+      // Find restrictions where other parts make this part incompatible
+      const incompatibilitiesAsTarget = allRestrictions.filter(
+        (restriction) => restriction.id_part_incompatible === selectedPart.id
+      );
+
+      // Mark incompatible parts as disabled
+      incompatibilitiesAsSource.forEach((incompatibility) => {
+        partsToDisable.add(incompatibility.id_part_incompatible);
+      });
+
+      incompatibilitiesAsTarget.forEach((incompatibility) => {
+        partsToDisable.add(incompatibility.id_part);
+      });
+    });
+
+    return partsToDisable;
+  };
+
+  // Helper function to find price record for a part
+  const findPriceRecord = (part: any, selectedParts: any[]): any => {
+    // Helper function to create a default price record from a part
+    const createDefaultPriceRecord = (part: any) => ({
+      price: part.price || 0,
+      base_price: part.base_price || 0,
+      id_related_part: null,
+    });
+
+    // If no pricing array, use the default price record
+    if (
+      !part.pricing ||
+      !Array.isArray(part.pricing) ||
+      part.pricing.length === 0
+    ) {
+      return createDefaultPriceRecord(part);
+    }
+
+    // Look for pricing records with related_part
+    const relatedPartPricing = part.pricing.filter((priceRecord: any) => {
+      if (priceRecord.id_related_part) {
+        // Check if the related part is selected
+        const relatedPartSelected = selectedParts.some(
+          (selectedPart: any) => selectedPart.id === priceRecord.id_related_part
+        );
+
+        return relatedPartSelected;
+      }
+      return false;
+    });
+
+    // If we found related pricing, use the first one
+    if (relatedPartPricing.length > 0) {
+      return relatedPartPricing[0];
+    }
+
+    // Fallback to the default price record
+    return createDefaultPriceRecord(part);
+  };
+
   useEffect(() => {
     const fetchBuilder = async () => {
       const response = await fetch("/api/builder");
       const builder = await response.json();
-      console.log("builder", builder);
       setBuilder(builder[0]);
       setShouldCalculatePrices(true);
     };
     fetchBuilder();
   }, []);
 
-  const handlePartClick = (part: any, feature: any) => {
-    let pricing = part.pricing;
-
-    pricing = pricing.filter((p: any) => !p.id_related_part)[0];
-
-    console.log("pricing", pricing);
-
+  const handlePartSelection = (part: any, feature: any) => {
     setBuilder((prevBuilder: any) => {
       const updatedBuilder = {
         ...prevBuilder,
         features: prevBuilder.features.map((_feature: any) => {
           if (_feature.id === feature.id) {
-            //pricing:
             return {
               ..._feature,
               parts: _feature.parts.map((_part: any) => ({
@@ -82,13 +158,12 @@ export default function BuilderPage() {
       return updatedBuilder;
     });
 
-    // Trigger price recalculation after part selection
     setShouldCalculatePrices(true);
   };
 
-  // Effect for calculating prices
+  // Effect for calculating prices and restrictions
   useEffect(() => {
-    if (!shouldCalculatePrices || !builder) return;
+    if (!shouldCalculatePrices) return;
 
     setBuilder((prevBuilder: any) => {
       if (!prevBuilder) return prevBuilder;
@@ -99,93 +174,46 @@ export default function BuilderPage() {
         feature.parts.filter((part: any) => part.selected)
       );
 
-      // First pass: Find all parts that should be disabled based on selected parts and negative price values
-      const partsToDisable = new Set<string>();
-
-      prevBuilder.features.forEach((feature: any) => {
-        feature.parts.forEach((part: any) => {
-          if (part.pricing) {
-            part.pricing.forEach((priceRecord: any) => {
-              if (priceRecord.id_related_part && priceRecord.price < 0) {
-                // Check if the related part is selected
-                const relatedPartSelected = allSelectedParts.some(
-                  (selectedPart: any) =>
-                    selectedPart.id === priceRecord.id_related_part
-                );
-
-                // If related part is selected and price is negative, this part should be disabled
-                if (relatedPartSelected) {
-                  partsToDisable.add(part.id);
-                }
-              }
-            });
-          }
-        });
-      });
+      // Get all restrictions and calculate which parts should be disabled
+      const allRestrictions = collectAllRestrictions(prevBuilder);
+      const partsToDisable = findPartsToDisable(
+        allSelectedParts,
+        allRestrictions
+      );
 
       const updatedBuilder = {
         ...prevBuilder,
         features: prevBuilder.features.map((feature: any) => ({
           ...feature,
           parts: feature.parts.map((part: any) => {
-            // Apply disabled state based on our calculation
+            // Apply disabled state based on restrictions
             const isDisabled = partsToDisable.has(part.id);
 
             // Find appropriate price record for this part
-            let selectedPriceRecord: any = null;
+            const selectedPriceRecord = findPriceRecord(part, allSelectedParts);
 
-            // Check if there's a related part price record that applies
-            if (part.pricing) {
-              // First look for pricing records with related_part
-              const relatedPartPricing = part.pricing.filter(
-                (priceRecord: any) => {
-                  if (priceRecord.id_related_part) {
-                    // Check if the related part is selected
-                    const relatedPartSelected = allSelectedParts.some(
-                      (selectedPart: any) =>
-                        selectedPart.id === priceRecord.id_related_part
-                    );
-
-                    return relatedPartSelected;
-                  }
-                  return false;
-                }
+            // Add to total price if part is selected
+            if (part.selected && selectedPriceRecord && !isDisabled) {
+              setPrice(
+                (prevPrice: number) => prevPrice + selectedPriceRecord.price
               );
-
-              // If we found related pricing, use the first one
-              if (relatedPartPricing.length > 0) {
-                selectedPriceRecord = relatedPartPricing[0];
-              } else {
-                // Fallback to pricing without related parts
-                selectedPriceRecord = part.pricing.find(
-                  (priceRecord: any) => !priceRecord.id_related_part
-                );
-              }
-
-              // Add to total price if part is selected
-              if (part.selected && selectedPriceRecord && !isDisabled) {
-                setPrice(
-                  (prevPrice: number) => prevPrice + selectedPriceRecord.price
-                );
-              }
             }
 
             return {
               ...part,
               disabled: isDisabled,
-              price: selectedPriceRecord,
+              priceValue: selectedPriceRecord.price,
+              currentPriceRecord: selectedPriceRecord,
             };
           }),
         })),
       };
 
-      console.log("updatedBuilder", updatedBuilder);
       return updatedBuilder;
     });
 
-    // Reset the flag after calculation is done
     setShouldCalculatePrices(false);
-  }, [shouldCalculatePrices, builder]);
+  }, [shouldCalculatePrices]);
 
   return (
     <div className={block}>
@@ -212,9 +240,9 @@ export default function BuilderPage() {
                           part.selected,
                       })}
                       key={part.id}
-                      onClick={() => handlePartClick(part, feature)}
+                      onClick={() => handlePartSelection(part, feature)}
                     >
-                      {part.label}-{part?.price?.price}-
+                      {part.label}-{part.priceValue || 0}
                     </div>
                   ))}
                 </div>
