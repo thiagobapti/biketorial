@@ -68,9 +68,8 @@ export async function getBuilder() {
                       jsonb_build_object(
                         'id', pricing.id,
                         'price', pricing.price,
-                        'original_price', pricing.original_price,
-                        'id_related_part', pricing.id_related_part,
-                        'except_related_part', pricing.except_related_part
+                        'base_price', pricing.base_price,
+                        'id_related_part', pricing.id_related_part
                       )
                     )
                     FROM public.pricing

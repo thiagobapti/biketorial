@@ -41,6 +41,7 @@ export default function BuilderPage() {
   const [builder, setBuilder] = useState<any>();
   const [price, setPrice] = useState(0);
   const [shouldCalculatePrices, setShouldCalculatePrices] = useState(false);
+  const [isPromptComplete, setIsPromptComplete] = useState(false);
   const cartContext = useContext(CartContext);
 
   // Helper function to collect all restrictions from the builder
@@ -176,6 +177,12 @@ export default function BuilderPage() {
         feature.parts.filter((part: any) => part.selected)
       );
 
+      // Check if all features have at least one part selected
+      const allFeaturesComplete = prevBuilder.features.every((feature: any) =>
+        feature.parts.some((part: any) => part.selected)
+      );
+      setIsPromptComplete(allFeaturesComplete);
+
       // Get all restrictions and calculate which parts should be disabled
       const allRestrictions = collectAllRestrictions(prevBuilder);
       const partsToDisable = findPartsToDisable(
@@ -237,12 +244,30 @@ export default function BuilderPage() {
             <div className={`${block}__toolbar-header-label`}>
               {builder?.label}-{price}
             </div>
+            <div className={`${block}__breadcrumb`}>
+              {builder?.features.map((feature: any) => (
+                <div
+                  className={cn(`${block}__breadcrumb-item`, {
+                    [`${block}__breadcrumb-item--active`]: feature.parts.some(
+                      (part: any) => part.selected
+                    ),
+                  })}
+                  key={feature.id}
+                ></div>
+              ))}
+            </div>
           </div>
           <div className={`${block}__toolbar-actions`}>
-            <button className={`${block}__toolbar-actions-button`}>View</button>
+            <button
+              className={`${block}__toolbar-actions-button`}
+              disabled={!isPromptComplete}
+            >
+              View
+            </button>
             <button
               className={`${block}__toolbar-actions-button`}
               onClick={handleAddToCart}
+              disabled={!isPromptComplete}
             >
               Add to cart
             </button>

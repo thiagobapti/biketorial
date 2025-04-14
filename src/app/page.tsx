@@ -1,10 +1,11 @@
-"use client";
+// "use client";
 
 import Image from "next/image";
 import "./page.scss";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useState } from "react";
+import { getGalleryData } from "@/backend/store";
 
 const block = "page";
 
@@ -23,42 +24,42 @@ type Part = {
   quantity_available: number;
 };
 
-export default function Page() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [parts, setParts] = useState<Part[]>([]);
+export default async function Page() {
+  let galleryData: any[] = [];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [categoriesResponse, partsResponse] = await Promise.all([
-          fetch("/api/categories"),
-          fetch("/api/parts"),
-        ]);
+  const fetchData = async () => {
+    const getGalleryDataResponse = await getGalleryData();
 
-        const categoriesData = await categoriesResponse.json();
-        const partsData = await partsResponse.json();
+    galleryData = getGalleryDataResponse || [];
+  };
 
-        setCategories(categoriesData);
-        setParts(partsData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  await fetchData();
 
   return (
     <div className={block}>
       <div className={`${block}__container container`}>
-        Biketorial
-        <Link href="/builder">Builder</Link>
-        {categories.map((category) => (
-          <Link key={category.id} href={`/categories/${category.id}`}>
-            {category.label}
-          </Link>
-        ))}
-        {parts.map((part) => (
+        <div>
+          Biketorial
+          <Link href="/builder">Builder</Link>
+        </div>
+        <div className={`${block}__gallery`}>
+          {Array.isArray(galleryData) &&
+            galleryData.map((part) => (
+              <div className={`${block}__part`} key={part.id_part}>
+                {part.label}-{part.price}
+                <Image
+                  className={`${block}__part-image`}
+                  src={`/parts/${part.id_part}.png`}
+                  alt={part.label}
+                  width={240}
+                  height={160}
+                />
+                <br />
+                <Link href={`/part/${part.id_part}`}>View</Link>
+              </div>
+            ))}
+        </div>
+        {/* {parts.map((part) => (
           <div className={`${block}__part`} key={part.id}>
             {!part.quantity_available && (
               <div style={{ color: "red" }}>Out of stock</div>
@@ -76,7 +77,7 @@ export default function Page() {
             </span>
             {part.discount_price && ` / ${part.discount_price}`}
           </div>
-        ))}
+        ))}*/}
       </div>
     </div>
   );
