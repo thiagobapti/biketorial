@@ -1,11 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import "./page.scss";
-import { useCallback, useContext, useEffect, useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
 import cn from "classnames";
 import { CartContext } from "@/contexts/cart";
+import {
+  allFeaturesComplete,
+  handlePartSelection,
+  calculatePricesAndDisabledStates,
+} from "@/util/misc";
+import { PurchaseItem } from "@/types";
 const block = "builder-page";
 
 export type Restriction = {
@@ -14,121 +18,18 @@ export type Restriction = {
   details: string | null;
 };
 
-// export type Part = {
-//   id: string;
-//   label: string;
-//   selected: boolean;
-//   restrictions?: Restriction[];
-// };
-
-// export type Feature = {
-//   id: string;
-//   label: string;
-//   parts: Part[];
-// };
-
-// export type Builder = {
-//   label: string;
-//   features: Feature[];
-//   image?: string;
-// };
-
 export default function BuilderPage() {
+  const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
+    fullfilled: false,
+    price: 0,
+  });
   enum State {
     Default = "default",
   }
   const [state, setState] = useState<State>(State.Default);
   const [builder, setBuilder] = useState<any>();
-  const [price, setPrice] = useState(0);
   const [shouldCalculatePrices, setShouldCalculatePrices] = useState(false);
-  const [isPromptComplete, setIsPromptComplete] = useState(false);
   const cartContext = useContext(CartContext);
-
-  // Helper function to collect all restrictions from the builder
-  const collectAllRestrictions = (builder: any): Restriction[] => {
-    const allRestrictions: Restriction[] = [];
-
-    builder.features.forEach((feature: any) => {
-      feature.parts.forEach((part: any) => {
-        if (part.restrictions && Array.isArray(part.restrictions)) {
-          allRestrictions.push(...part.restrictions);
-        }
-      });
-    });
-
-    return allRestrictions;
-  };
-
-  // Helper function to find parts that should be disabled based on selected parts
-  const findPartsToDisable = (
-    selectedParts: any[],
-    allRestrictions: Restriction[]
-  ): Set<string> => {
-    const partsToDisable = new Set<string>();
-
-    selectedParts.forEach((selectedPart: any) => {
-      // Find restrictions where this part makes other parts incompatible
-      const incompatibilitiesAsSource = allRestrictions.filter(
-        (restriction) => restriction.id_part === selectedPart.id
-      );
-
-      // Find restrictions where other parts make this part incompatible
-      const incompatibilitiesAsTarget = allRestrictions.filter(
-        (restriction) => restriction.id_part_incompatible === selectedPart.id
-      );
-
-      // Mark incompatible parts as disabled
-      incompatibilitiesAsSource.forEach((incompatibility) => {
-        partsToDisable.add(incompatibility.id_part_incompatible);
-      });
-
-      incompatibilitiesAsTarget.forEach((incompatibility) => {
-        partsToDisable.add(incompatibility.id_part);
-      });
-    });
-
-    return partsToDisable;
-  };
-
-  // Helper function to find price record for a part
-  const findPriceRecord = (part: any, selectedParts: any[]): any => {
-    // Helper function to create a default price record from a part
-    const createDefaultPriceRecord = (part: any) => ({
-      price: part.price || 0,
-      base_price: part.base_price || 0,
-      id_related_part: null,
-    });
-
-    // If no pricing array, use the default price record
-    if (
-      !part.pricing ||
-      !Array.isArray(part.pricing) ||
-      part.pricing.length === 0
-    ) {
-      return createDefaultPriceRecord(part);
-    }
-
-    // Look for pricing records with related_part
-    const relatedPartPricing = part.pricing.filter((priceRecord: any) => {
-      if (priceRecord.id_related_part) {
-        // Check if the related part is selected
-        const relatedPartSelected = selectedParts.some(
-          (selectedPart: any) => selectedPart.id === priceRecord.id_related_part
-        );
-
-        return relatedPartSelected;
-      }
-      return false;
-    });
-
-    // If we found related pricing, use the first one
-    if (relatedPartPricing.length > 0) {
-      return relatedPartPricing[0];
-    }
-
-    // Fallback to the default price record
-    return createDefaultPriceRecord(part);
-  };
 
   useEffect(() => {
     const fetchBuilder = async () => {
@@ -140,100 +41,57 @@ export default function BuilderPage() {
     fetchBuilder();
   }, []);
 
-  const handlePartSelection = (part: any, feature: any) => {
-    setBuilder((prevBuilder: any) => {
-      const updatedBuilder = {
-        ...prevBuilder,
-        features: prevBuilder.features.map((_feature: any) => {
-          if (_feature.id === feature.id) {
-            return {
-              ..._feature,
-              parts: _feature.parts.map((_part: any) => ({
-                ..._part,
-                selected: _part.id === part.id,
-              })),
-            };
-          }
-          return _feature;
-        }),
-      };
+  const handlePartClick = (part: any, feature: any) => {
+    if (!builder) return;
 
-      return updatedBuilder;
+    // Only update the selection for the current feature, preserving other feature selections
+    const updatedFeatures = builder.features.map((currentFeature: any) => {
+      if (currentFeature.id_category === feature.id_category) {
+        return {
+          ...currentFeature,
+          parts: currentFeature.parts.map((_part: any) => ({
+            ..._part,
+            selected: _part.id === part.id,
+          })),
+        };
+      }
+      return currentFeature;
+    });
+
+    setBuilder({
+      ...builder,
+      features: updatedFeatures,
     });
 
     setShouldCalculatePrices(true);
   };
 
-  // Effect for calculating prices and restrictions
   useEffect(() => {
-    if (!shouldCalculatePrices) return;
+    if (!shouldCalculatePrices || !builder) return;
 
-    setBuilder((prevBuilder: any) => {
-      if (!prevBuilder) return prevBuilder;
-      setPrice(0);
+    const { updatedItems, totalPrice, isFullfilled } =
+      calculatePricesAndDisabledStates(builder.features);
 
-      // Find all selected parts across all features
-      const allSelectedParts = prevBuilder.features.flatMap((feature: any) =>
-        feature.parts.filter((part: any) => part.selected)
-      );
+    setBuilder({
+      ...builder,
+      features: updatedItems,
+    });
 
-      // Check if all features have at least one part selected
-      const allFeaturesComplete = prevBuilder.features.every((feature: any) =>
-        feature.parts.some((part: any) => part.selected)
-      );
-      setIsPromptComplete(allFeaturesComplete);
-
-      // Get all restrictions and calculate which parts should be disabled
-      const allRestrictions = collectAllRestrictions(prevBuilder);
-      const partsToDisable = findPartsToDisable(
-        allSelectedParts,
-        allRestrictions
-      );
-
-      const updatedBuilder = {
-        ...prevBuilder,
-        features: prevBuilder.features.map((feature: any) => ({
-          ...feature,
-          parts: feature.parts.map((part: any) => {
-            // Apply disabled state based on restrictions
-            const isDisabled = partsToDisable.has(part.id);
-
-            // Find appropriate price record for this part
-            const selectedPriceRecord = findPriceRecord(part, allSelectedParts);
-
-            // Add to total price if part is selected
-            if (part.selected && selectedPriceRecord && !isDisabled) {
-              setPrice(
-                (prevPrice: number) => prevPrice + selectedPriceRecord.price
-              );
-            }
-
-            return {
-              ...part,
-              disabled: isDisabled,
-              priceValue: selectedPriceRecord.price,
-              currentPriceRecord: selectedPriceRecord,
-            };
-          }),
-        })),
-      };
-
-      return updatedBuilder;
+    setPurchaseItem({
+      ...purchaseItem,
+      fullfilled: isFullfilled,
+      item: {
+        ...builder,
+        features: updatedItems,
+      },
+      price: totalPrice,
     });
 
     setShouldCalculatePrices(false);
-  }, [shouldCalculatePrices]);
+  }, [shouldCalculatePrices, builder, purchaseItem]);
 
   const handleAddToCart = () => {
-    cartContext.updateItems([
-      {
-        builder: builder,
-        price: price,
-        selectedParts: builder.features.flatMap((feature: any) =>
-          feature.parts.filter((part: any) => part.selected)
-        ),
-      },
-    ]);
+    cartContext.updateItems([purchaseItem]);
   };
 
   return (
@@ -242,7 +100,7 @@ export default function BuilderPage() {
         <div className={`${block}__toolbar`}>
           <div className={`${block}__toolbar-header`}>
             <div className={`${block}__toolbar-header-label`}>
-              {builder?.label}-{price}
+              {builder?.label} - Total Price: {purchaseItem.price}
             </div>
             <div className={`${block}__breadcrumb`}>
               {builder?.features.map((feature: any) => (
@@ -252,7 +110,7 @@ export default function BuilderPage() {
                       (part: any) => part.selected
                     ),
                   })}
-                  key={feature.id}
+                  key={feature.id_category}
                 ></div>
               ))}
             </div>
@@ -260,21 +118,24 @@ export default function BuilderPage() {
           <div className={`${block}__toolbar-actions`}>
             <button
               className={`${block}__toolbar-actions-button`}
-              disabled={!isPromptComplete}
+              disabled={!purchaseItem.fullfilled}
             >
               View
             </button>
             <button
               className={`${block}__toolbar-actions-button`}
               onClick={handleAddToCart}
-              disabled={!isPromptComplete}
+              disabled={!purchaseItem.fullfilled}
             >
               Add to cart
             </button>
           </div>
           <div className={`${block}__toolbar-body`}>
             {builder?.features.map((feature: any) => (
-              <div className={`${block}__toolbar-feature`} key={feature.id}>
+              <div
+                className={`${block}__toolbar-feature`}
+                key={feature.id_category}
+              >
                 <div className={`${block}__toolbar-feature-category`}>
                   <div className={`${block}__toolbar-feature-category-label`}>
                     {feature.category.label}
@@ -289,7 +150,9 @@ export default function BuilderPage() {
                             part.selected,
                         })}
                         key={part.id}
-                        onClick={() => handlePartSelection(part, feature)}
+                        onClick={() =>
+                          !part.disabled && handlePartClick(part, feature)
+                        }
                       >
                         {part.label}-{part.priceValue || 0}
                       </div>

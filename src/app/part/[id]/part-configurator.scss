@@ -1,0 +1,38 @@
+$block: "part-configurator";
+
+.#{$block} {
+  &__toolbar-feature {
+    // background-color: #373737;
+    margin-bottom: 20px;
+  }
+
+  &__toolbar-feature-category {
+    // background-color: #373737;
+  }
+
+  &__toolbar-feature-category-label {
+    // background-color: #373737;
+    font-weight: 800;
+    color: gold;
+  }
+
+  &__toolbar-feature-part {
+    border: solid 1px #cfcfcf;
+    border-radius: 6px;
+    padding: 0 10px;
+    height: 26px;
+    margin-top: 10px;
+    color: black;
+    display: flex;
+    align-items: center;
+
+    &--selected {
+      border: solid 1px gold;
+      background-color: red;
+    }
+
+    &--disabled {
+      opacity: 0.5;
+    }
+  }
+}

@@ -45,7 +45,6 @@ export async function getBuilder() {
         builders.*,
         json_agg(
           jsonb_build_object(
-            'id', builder_features.id,
             'order', builder_features."order",
             'id_category', builder_features.id_category,
             'id_builder', builder_features.id_builder,
@@ -66,7 +65,6 @@ export async function getBuilder() {
                   'pricing', (
                     SELECT json_agg(
                       jsonb_build_object(
-                        'id', pricing.id,
                         'price', pricing.price,
                         'base_price', pricing.base_price,
                         'id_related_part', pricing.id_related_part

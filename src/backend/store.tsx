@@ -218,7 +218,6 @@ export async function getRelatedCategoriesAndParts(partId: string) {
             'pricing', (
               SELECT json_agg(
                 jsonb_build_object(
-                  'id', pricing.id,
                   'price', pricing.price,
                   'base_price', pricing.base_price,
                   'id_related_part', pricing.id_related_part
