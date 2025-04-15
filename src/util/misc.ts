@@ -4,7 +4,6 @@ export const allFeaturesComplete = (features: any[]) => {
   const allFeaturesComplete = features.every((feature: any) =>
     feature.parts.some((part: any) => part.selected)
   );
-  console.log("allFeaturesComplete", allFeaturesComplete);
   return allFeaturesComplete;
 };
 
@@ -29,17 +28,14 @@ export const findPartsToDisable = (
   const partsToDisable = new Set<string>();
 
   selectedParts.forEach((selectedPart: any) => {
-    // Find restrictions where this part makes other parts incompatible
     const incompatibilitiesAsSource = allRestrictions.filter(
       (restriction) => restriction.id_part === selectedPart.id
     );
 
-    // Find restrictions where other parts make this part incompatible
     const incompatibilitiesAsTarget = allRestrictions.filter(
       (restriction) => restriction.id_part_incompatible === selectedPart.id
     );
 
-    // Mark incompatible parts as disabled
     incompatibilitiesAsSource.forEach((incompatibility) => {
       partsToDisable.add(incompatibility.id_part_incompatible);
     });
@@ -66,7 +62,6 @@ export const findPriceRecord = (part: any, selectedParts: any[]): any => {
     id_related_part: null,
   });
 
-  // If no pricing array, use the default price record
   if (
     !part.pricing ||
     !Array.isArray(part.pricing) ||
@@ -75,10 +70,8 @@ export const findPriceRecord = (part: any, selectedParts: any[]): any => {
     return createDefaultPriceRecord(part);
   }
 
-  // Look for pricing records with related_part
   const relatedPartPricing = part.pricing.filter((priceRecord: any) => {
     if (priceRecord.id_related_part) {
-      // Check if the related part is selected
       const relatedPartSelected = selectedParts.some(
         (selectedPart: any) => selectedPart.id === priceRecord.id_related_part
       );
@@ -88,18 +81,13 @@ export const findPriceRecord = (part: any, selectedParts: any[]): any => {
     return false;
   });
 
-  // If we found related pricing, use the first one
   if (relatedPartPricing.length > 0) {
     return relatedPartPricing[0];
   }
 
-  // Fallback to the default price record
   return createDefaultPriceRecord(part);
 };
 
-/**
- * Handles part selection logic, returning updated categories/features with the selected part
- */
 export const handlePartSelection = (
   part: any,
   feature: any,
@@ -119,9 +107,6 @@ export const handlePartSelection = (
   });
 };
 
-/**
- * Calculates prices and disabled states for all parts based on selections
- */
 export const calculatePricesAndDisabledStates = (
   categoriesOrFeatures: any[]
 ) => {
@@ -155,6 +140,6 @@ export const calculatePricesAndDisabledStates = (
   return {
     updatedItems,
     totalPrice,
-    isFullfilled: allFeaturesComplete(updatedItems),
+    isfulfilled: allFeaturesComplete(updatedItems),
   };
 };

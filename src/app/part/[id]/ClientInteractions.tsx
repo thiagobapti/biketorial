@@ -22,7 +22,7 @@ export function ClientInteractions({
 }: ClientInteractionsProps) {
   const cartContext = useContext(CartContext);
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
-    fullfilled: false,
+    fulfilled: false,
     price: 0,
   });
   const [categoriesState, setCategoriesState] = useState<any>(categories);
@@ -43,8 +43,11 @@ export function ClientInteractions({
       setCategoriesState(updatedCategories);
       setPurchaseItem({
         ...purchaseItem,
-        categories: updatedCategories,
-        fullfilled: allFeaturesComplete(updatedCategories),
+        // item: {
+        //   id: "",
+        //   features: updatedCategories,
+        // },
+        fulfilled: allFeaturesComplete(updatedCategories),
       });
       setShouldCalculatePrices(true);
     },
@@ -54,22 +57,29 @@ export function ClientInteractions({
   useEffect(() => {
     if (!shouldCalculatePrices) return;
 
-    const { updatedItems, totalPrice, isFullfilled } =
+    const { updatedItems, totalPrice, isfulfilled } =
       calculatePricesAndDisabledStates(categoriesState);
+
+    const allSelectedParts = updatedItems.flatMap((item: any) =>
+      item.parts.filter((part: any) => part.selected)
+    );
 
     setCategoriesState(updatedItems);
     setPurchaseItem({
       ...purchaseItem,
       price: totalPrice,
-      fullfilled: isFullfilled,
-      item: part,
+      fulfilled: isfulfilled,
+      parts: [...part, ...allSelectedParts],
+      item: {
+        label: part[0].category_label,
+      },
     });
 
     setShouldCalculatePrices(false);
   }, [shouldCalculatePrices, categoriesState, purchaseItem, part]);
 
   const handleAddToCart = useCallback(() => {
-    cartContext.updateItems([purchaseItem]);
+    cartContext.append(purchaseItem);
   }, [purchaseItem, cartContext]);
 
   return (
@@ -98,7 +108,7 @@ export function ClientInteractions({
           </div>
         </div>
       ))}
-      <button onClick={handleAddToCart} disabled={!purchaseItem.fullfilled}>
+      <button onClick={handleAddToCart} disabled={!purchaseItem.fulfilled}>
         Add to cart
       </button>
     </div>

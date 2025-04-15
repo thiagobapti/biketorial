@@ -62,6 +62,7 @@ export async function getBuilder() {
                   'quantity_sold', parts.quantity_sold,
                   'base_price', parts.base_price,
                   'price', parts.price,
+                  'category_label', categories.label,
                   'pricing', (
                     SELECT json_agg(
                       jsonb_build_object(
@@ -103,7 +104,7 @@ export async function getBuilder() {
   } catch (error: unknown) {
     await client.sql`ROLLBACK`;
     console.error(
-      "[ getFeatures ]",
+      "[ getBuilder ]",
       error instanceof Error ? error.message : String(error)
     );
     return false;
@@ -111,45 +112,3 @@ export async function getBuilder() {
     await client.end();
   }
 }
-// export async function getFeatures() {
-//   const client = createClient({
-//     connectionString: process.env.POSTGRES_URL_NON_POOLING,
-//   });
-//   try {
-//     await client.connect();
-//     await client.sql`BEGIN`;
-
-//     const result = await client.sql`
-//       SELECT
-//       bike_builder_features.*,
-//         COALESCE(
-//           jsonb_agg(
-//             jsonb_build_object(
-//               'id', o.id,
-//               'label', o.label
-//             )
-//             ORDER BY o.label
-//           ) FILTER (WHERE o.id IS NOT NULL),
-//           '[]'::jsonb
-//         ) as options
-//       FROM bike_builder_features
-//       LEFT JOIN bike_builder_options o ON o.id_feature = bike_builder_features.id
-//       GROUP BY bike_builder_features.id
-//       ORDER BY bike_builder_features.order
-//     `;
-
-//     console.log(result.rows);
-
-//     await client.sql`COMMIT`;
-//     return result.rows;
-//   } catch (error: unknown) {
-//     await client.sql`ROLLBACK`;
-//     console.error(
-//       "[ signup ]",
-//       error instanceof Error ? error.message : String(error)
-//     );
-//     return false;
-//   } finally {
-//     await client.end();
-//   }
-// }

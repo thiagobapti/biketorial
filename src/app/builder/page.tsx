@@ -20,7 +20,7 @@ export type Restriction = {
 
 export default function BuilderPage() {
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
-    fullfilled: false,
+    fulfilled: false,
     price: 0,
   });
   enum State {
@@ -69,8 +69,12 @@ export default function BuilderPage() {
   useEffect(() => {
     if (!shouldCalculatePrices || !builder) return;
 
-    const { updatedItems, totalPrice, isFullfilled } =
+    const { updatedItems, totalPrice, isfulfilled } =
       calculatePricesAndDisabledStates(builder.features);
+
+    const allSelectedParts = updatedItems.flatMap((item: any) =>
+      item.parts.filter((part: any) => part.selected)
+    );
 
     setBuilder({
       ...builder,
@@ -79,19 +83,20 @@ export default function BuilderPage() {
 
     setPurchaseItem({
       ...purchaseItem,
-      fullfilled: isFullfilled,
+      fulfilled: isfulfilled,
+      parts: allSelectedParts,
       item: {
-        ...builder,
-        features: updatedItems,
+        label: builder.label,
       },
       price: totalPrice,
+      id_builder: builder.id,
     });
 
     setShouldCalculatePrices(false);
   }, [shouldCalculatePrices, builder, purchaseItem]);
 
   const handleAddToCart = () => {
-    cartContext.updateItems([purchaseItem]);
+    cartContext.append(purchaseItem);
   };
 
   return (
@@ -118,14 +123,14 @@ export default function BuilderPage() {
           <div className={`${block}__toolbar-actions`}>
             <button
               className={`${block}__toolbar-actions-button`}
-              disabled={!purchaseItem.fullfilled}
+              disabled={!purchaseItem.fulfilled}
             >
               View
             </button>
             <button
               className={`${block}__toolbar-actions-button`}
               onClick={handleAddToCart}
-              disabled={!purchaseItem.fullfilled}
+              disabled={!purchaseItem.fulfilled}
             >
               Add to cart
             </button>

@@ -215,6 +215,7 @@ export async function getRelatedCategoriesAndParts(partId: string) {
             'quantity_sold', parts.quantity_sold,
             'base_price', parts.base_price,
             'price', parts.price,
+            'category_label', categories.label,
             'pricing', (
               SELECT json_agg(
                 jsonb_build_object(

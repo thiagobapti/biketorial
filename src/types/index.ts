@@ -1,9 +1,12 @@
 export type PurchaseItem = {
   id?: string;
   price: number;
-  fullfilled: boolean;
-  item?: Part | Build;
-  categories?: Category[];
+  fulfilled: boolean;
+  parts?: Part[];
+  id_builder?: string;
+  item?: {
+    label?: string;
+  };
 };
 
 export type Restriction = {
@@ -21,7 +24,9 @@ export type Build = {
 
 export type Part = {
   id: string;
-  label: string;
+  label?: string;
+  // features?: Category[] | any[];
+
   // selected: boolean;
   // disabled?: boolean;
   // price?: number;

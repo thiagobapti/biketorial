@@ -5,11 +5,15 @@ import { createContext, useContext, useState, useEffect } from "react";
 type CartContextType = {
   items: any[];
   updateItems: (items: any[]) => void;
+  append: (item: any) => void;
+  remove: (item: any) => void;
 };
 
 export const CartContext = createContext<CartContextType>({
   items: [],
   updateItems: () => {},
+  append: () => {},
+  remove: () => {},
 });
 
 export const CartContextProvider = ({
@@ -31,11 +35,23 @@ export const CartContextProvider = ({
     localStorage.setItem("cartItems", JSON.stringify(newItems));
   };
 
+  const append = (item: any) => {
+    const newItems = [...items, item];
+    updateItems(newItems);
+  };
+
+  const remove = (item: any) => {
+    const newItems = items.filter((i) => i !== item);
+    updateItems(newItems);
+  };
+
   return (
     <CartContext.Provider
       value={{
         items,
         updateItems,
+        append,
+        remove,
       }}
     >
       {children}

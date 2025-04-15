@@ -9,7 +9,6 @@ import {
   getRelatedCategoriesAndParts,
 } from "@/backend/store";
 import cn from "classnames";
-import { PurchaseItem } from "@/types";
 import { ClientInteractions } from "./ClientInteractions";
 
 const block = "part-page";
@@ -27,8 +26,6 @@ export default async function PartPage(props: { params: paramsType }) {
     const getCategoryByPartIdResponse = await getCategoryByPartId(id);
     const getRelatedCategoriesAndPartsResponse =
       await getRelatedCategoriesAndParts(id);
-
-    console.log(getRelatedCategoriesAndPartsResponse);
 
     galleryData = partData || [];
     category = getCategoryByPartIdResponse;
@@ -68,11 +65,6 @@ export default async function PartPage(props: { params: paramsType }) {
           </div>
         </div>
       </div>
-      {/* <ClientInteractions
-        purchaseItem={purchaseItem}
-        blockName={block}
-        showAddToCart={true}
-      /> */}
     </div>
   );
 }
