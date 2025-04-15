@@ -41,27 +41,34 @@ export default async function PartPage(props: { params: paramsType }) {
           Biketorial
           <Link href="/builder">Builder</Link>
         </div>
-        <div>{category?.label}</div>
         <div className={`${block}__gallery`}>
-          {Array.isArray(galleryData) &&
-            galleryData.map((part) => (
-              <div className={`${block}__part`} key={part.id_part}>
-                <Image
-                  className={`${block}__part-image`}
-                  src={`/parts/${part.id_part}.png`}
-                  alt={part.label}
-                  width={240}
-                  height={160}
-                  priority
-                />
-                {part.label}-{part.price}
-              </div>
-            ))}
-          <div>
-            <ClientInteractions
-              categories={relatedCategoriesAndParts}
-              part={galleryData}
-            />
+          <div className={`${block}__gallery-media`}>
+            {Array.isArray(galleryData) &&
+              galleryData.map((part) => (
+                <div className={`${block}__part`} key={part.id_part}>
+                  <Image
+                    className={`${block}__part-image`}
+                    src={`/parts/${part.id_part}.png`}
+                    alt={part.label}
+                    width={240}
+                    height={160}
+                    priority
+                  />
+                </div>
+              ))}
+          </div>
+          <div className={`${block}__gallery-info`}>
+            {Array.isArray(galleryData) &&
+              galleryData.map((part) => (
+                <div className={`${block}__part`} key={part.id_part}>
+                  <div>{category?.label}</div>
+                  {part.label}-{part.price}
+                  <ClientInteractions
+                    categories={relatedCategoriesAndParts}
+                    part={galleryData}
+                  />
+                </div>
+              ))}
           </div>
         </div>
       </div>

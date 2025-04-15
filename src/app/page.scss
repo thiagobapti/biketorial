@@ -7,10 +7,10 @@ $block: "page";
   margin-top: 60px;
 
   &__part {
-    border: solid 2px #373737;
+    // border: solid 2px #373737;
     background-color: #ffffff;
-    padding: 1rem;
-    border-radius: 10px;
+    padding: 6px;
+    border-radius: 8px;
 
     display: flex;
     flex-direction: column;
@@ -36,5 +36,44 @@ $block: "page";
     width: 240px;
     height: 160px;
     border-radius: 10px;
+  }
+
+  &__part-link {
+    background-color: #d07f14;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+
+  &__part-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 16px;
+  }
+
+  &__part-category {
+    font-size: 15px;
+    font-weight: 800;
+    color: #9a9a9a;
+  }
+
+  &__part-label {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  &__part-price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #373737;
   }
 }

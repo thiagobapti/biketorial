@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import "./header.scss";
 import { useContext, useState } from "react";
 import { CartContext } from "@/contexts/cart";
+import Image from "next/image";
 import cn from "classnames";
 const block = "header";
 
@@ -59,7 +60,6 @@ export default function Header() {
                   <div key={index}>
                     <div className={`${block}__cart-drawer-item`}>
                       <div className={`${block}__cart-drawer-item-title`}>
-                        {/* {item.item[0]?.label || `Custom Build`} */}
                         {item.item?.label || `Unnamed Build`}
                       </div>
                       <div className={`${block}__cart-drawer-item-price`}>
@@ -70,6 +70,15 @@ export default function Header() {
                       {item.parts &&
                         item.parts.map((part: any, index: number) => (
                           <div key={index}>
+                            <Image
+                              src={`/parts/${part.id || part.id_part}.png`}
+                              alt={part.label}
+                              width={120}
+                              height={80}
+                              style={{
+                                borderRadius: "10px",
+                              }}
+                            />
                             {part.category_label} - {part.label}
                           </div>
                         ))}

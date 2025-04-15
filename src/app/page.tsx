@@ -46,7 +46,6 @@ export default async function Page() {
           {Array.isArray(galleryData) &&
             galleryData.map((part) => (
               <div className={`${block}__part`} key={part.id_part}>
-                {part.label}-{part.price}
                 <Image
                   className={`${block}__part-image`}
                   src={`/parts/${part.id_part}.png`}
@@ -54,30 +53,22 @@ export default async function Page() {
                   width={240}
                   height={160}
                 />
-                <br />
-                <Link href={`/part/${part.id_part}`}>View</Link>
+                <div className={`${block}__part-info`}>
+                  <div className={`${block}__part-category`}>
+                    {part.category_label}
+                  </div>
+                  <div className={`${block}__part-label`}>{part.label}</div>
+                  <div className={`${block}__part-price`}>{part.price}</div>
+                </div>
+                <Link
+                  className={`${block}__part-link`}
+                  href={`/part/${part.id_part}`}
+                >
+                  View
+                </Link>
               </div>
             ))}
         </div>
-        {/* {parts.map((part) => (
-          <div className={`${block}__part`} key={part.id}>
-            {!part.quantity_available && (
-              <div style={{ color: "red" }}>Out of stock</div>
-            )}
-            {part.category.label}
-            <br />
-            {part.label}
-            <br />
-            <span
-              style={{
-                textDecoration: part.discount_price ? "line-through" : "",
-              }}
-            >
-              {part.regular_price}
-            </span>
-            {part.discount_price && ` / ${part.discount_price}`}
-          </div>
-        ))}*/}
       </div>
     </div>
   );
