@@ -1,8 +1,25 @@
+// export type GalleryItem = {
+//   id_part: string;
+//   label: string;
+//   base_price: number;
+//   price: number;
+//   quantity_available: number;
+//   quantity_sold: number;
+//   category_label: string;
+//   highlight: boolean;
+// };
+
+export type SafeState<T> =
+  | { status: "idle" }
+  | { status: "error" }
+  | { status: "success"; data: T };
+
 export type PurchaseItem = {
   id?: string;
   price: number;
   fulfilled: boolean;
   parts?: Part[];
+  categories?: Category[];
   id_builder?: string;
   item?: {
     label?: string;
@@ -24,12 +41,17 @@ export type Build = {
 
 export type Part = {
   id: string;
-  label?: string;
+  label: string;
+  price?: number;
+  id_category?: string;
+  category_label?: string;
+  quantity_available?: number;
+  quantity_sold?: number;
+  highlight?: boolean;
   // features?: Category[] | any[];
 
   // selected: boolean;
   // disabled?: boolean;
-  // price?: number;
   // base_price?: number;
   // priceValue?: number;
   // currentPriceRecord?: any;
@@ -45,6 +67,7 @@ export type Part = {
 export type Category = {
   id: string;
   label: string;
+  order?: number;
 };
 
 // // Feature represents a customizable aspect of the bike

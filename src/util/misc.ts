@@ -1,11 +1,11 @@
-import { Restriction } from "@/types";
+import { Part, Restriction } from "@/types";
 
-export const allFeaturesComplete = (features: any[]) => {
-  const allFeaturesComplete = features.every((feature: any) =>
-    feature.parts.some((part: any) => part.selected)
-  );
-  return allFeaturesComplete;
-};
+// export const getSelectedParts = (categories: any) => {
+//   const allSelectedParts = categories.flatMap((category: any) =>
+//     category.parts.filter((part: any) => part.selected)
+//   );
+//   return allSelectedParts;
+// };
 
 export const collectAllRestrictions = (categories: any): Restriction[] => {
   const allRestrictions: Restriction[] = [];
@@ -48,13 +48,6 @@ export const findPartsToDisable = (
   return partsToDisable;
 };
 
-export const findAllSelectedParts = (categories: any) => {
-  const allSelectedParts = categories.flatMap((category: any) =>
-    category.parts.filter((part: any) => part.selected)
-  );
-  return allSelectedParts;
-};
-
 export const findPriceRecord = (part: any, selectedParts: any[]): any => {
   const createDefaultPriceRecord = (part: any) => ({
     price: part.price || 0,
@@ -88,47 +81,59 @@ export const findPriceRecord = (part: any, selectedParts: any[]): any => {
   return createDefaultPriceRecord(part);
 };
 
-export const handlePartSelection = (
+export const handlePartSelectionWithPriceCalculation = (
   part: any,
   feature: any,
-  categoriesOrFeatures: any[]
+  categories: any[]
 ) => {
-  return categoriesOrFeatures.map((item: any) => {
+  // Track all selected parts while updating the selection
+  const allSelectedParts: Part[] = [];
+
+  const updatedCategories = categories.map((item: any) => {
     if (item.id === feature.id) {
       return {
         ...item,
-        parts: item.parts.map((_part: any) => ({
-          ..._part,
-          selected: _part.id === part.id,
-        })),
+        parts: item.parts.map((_part: any) => {
+          const isSelected = _part.id === part.id;
+          if (isSelected) {
+            allSelectedParts.push(_part);
+          }
+          return {
+            ..._part,
+            selected: isSelected,
+          };
+        }),
       };
+    } else {
+      // For other categories, keep the existing selection
+      item.parts.forEach((_part: any) => {
+        if (_part.selected) {
+          allSelectedParts.push(_part);
+        }
+      });
+      return item;
     }
-    return item;
   });
-};
 
-export const calculatePricesAndDisabledStates = (
-  categoriesOrFeatures: any[]
-) => {
-  const allSelectedParts = findAllSelectedParts(categoriesOrFeatures);
-  const allRestrictions = collectAllRestrictions(categoriesOrFeatures);
+  // Calculate prices and disabled states
+  const allRestrictions = collectAllRestrictions(updatedCategories);
   const partsToDisable = findPartsToDisable(allSelectedParts, allRestrictions);
 
   let totalPrice = 0;
 
-  const updatedItems = categoriesOrFeatures.map((item: any) => {
+  const updatedItems = updatedCategories.map((item: any) => {
     return {
       ...item,
-      parts: item.parts.map((part: any) => {
-        const isDisabled = partsToDisable.has(part.id);
-        const selectedPriceRecord = findPriceRecord(part, allSelectedParts);
+      parts: item.parts.map((_part: any) => {
+        const isDisabled = partsToDisable.has(_part.id);
+        const selectedPriceRecord = findPriceRecord(_part, allSelectedParts);
 
-        if (part.selected && selectedPriceRecord && !isDisabled) {
+        if (_part.selected && selectedPriceRecord && !isDisabled) {
           totalPrice += selectedPriceRecord.price;
         }
 
         return {
-          ...part,
+          ..._part,
           disabled: isDisabled,
           priceValue: selectedPriceRecord.price,
           currentPriceRecord: selectedPriceRecord,
@@ -140,6 +145,7 @@ export const calculatePricesAndDisabledStates = (
   return {
     updatedItems,
     totalPrice,
-    isfulfilled: allFeaturesComplete(updatedItems),
+    isfulfilled: allSelectedParts.length === updatedCategories.length,
+    allSelectedParts,
   };
 };

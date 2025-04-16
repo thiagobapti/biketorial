@@ -4,11 +4,7 @@ import "./page.scss";
 import { useContext, useEffect, useState } from "react";
 import cn from "classnames";
 import { CartContext } from "@/contexts/cart";
-import {
-  allFeaturesComplete,
-  handlePartSelection,
-  calculatePricesAndDisabledStates,
-} from "@/util/misc";
+import { handlePartSelectionWithPriceCalculation } from "@/util/misc";
 import { PurchaseItem } from "@/types";
 const block = "builder-page";
 
@@ -27,73 +23,43 @@ export default function BuilderPage() {
     Default = "default",
   }
   const [state, setState] = useState<State>(State.Default);
-  const [builder, setBuilder] = useState<any>();
-  const [shouldCalculatePrices, setShouldCalculatePrices] = useState(false);
   const cartContext = useContext(CartContext);
 
   useEffect(() => {
     const fetchBuilder = async () => {
       const response = await fetch("/api/builder");
       const builder = await response.json();
-      setBuilder(builder[0]);
-      setShouldCalculatePrices(true);
+
+      setPurchaseItem((prevPurchaseItem) => ({
+        ...prevPurchaseItem,
+        categories: builder.categories,
+        item: {
+          label: builder.label,
+        },
+        id_builder: builder.id,
+      }));
     };
     fetchBuilder();
   }, []);
 
   const handlePartClick = (part: any, feature: any) => {
-    if (!builder) return;
+    if (!purchaseItem.categories) return;
 
-    // Only update the selection for the current feature, preserving other feature selections
-    const updatedFeatures = builder.features.map((currentFeature: any) => {
-      if (currentFeature.id_category === feature.id_category) {
-        return {
-          ...currentFeature,
-          parts: currentFeature.parts.map((_part: any) => ({
-            ..._part,
-            selected: _part.id === part.id,
-          })),
-        };
-      }
-      return currentFeature;
-    });
-
-    setBuilder({
-      ...builder,
-      features: updatedFeatures,
-    });
-
-    setShouldCalculatePrices(true);
-  };
-
-  useEffect(() => {
-    if (!shouldCalculatePrices || !builder) return;
-
-    const { updatedItems, totalPrice, isfulfilled } =
-      calculatePricesAndDisabledStates(builder.features);
-
-    const allSelectedParts = updatedItems.flatMap((item: any) =>
-      item.parts.filter((part: any) => part.selected)
-    );
-
-    setBuilder({
-      ...builder,
-      features: updatedItems,
-    });
+    const { updatedItems, totalPrice, isfulfilled, allSelectedParts } =
+      handlePartSelectionWithPriceCalculation(
+        part,
+        feature,
+        purchaseItem.categories
+      );
 
     setPurchaseItem({
       ...purchaseItem,
-      fulfilled: isfulfilled,
+      categories: updatedItems,
       parts: allSelectedParts,
-      item: {
-        label: builder.label,
-      },
       price: totalPrice,
-      id_builder: builder.id,
+      fulfilled: isfulfilled,
     });
-
-    setShouldCalculatePrices(false);
-  }, [shouldCalculatePrices, builder, purchaseItem]);
+  };
 
   const handleAddToCart = () => {
     cartContext.append(purchaseItem);
@@ -105,17 +71,17 @@ export default function BuilderPage() {
         <div className={`${block}__toolbar`}>
           <div className={`${block}__toolbar-header`}>
             <div className={`${block}__toolbar-header-label`}>
-              {builder?.label} - Total Price: {purchaseItem.price}
+              {purchaseItem.item?.label} - Total Price: {purchaseItem.price}
             </div>
             <div className={`${block}__breadcrumb`}>
-              {builder?.features.map((feature: any) => (
+              {purchaseItem.categories?.map((feature: any) => (
                 <div
                   className={cn(`${block}__breadcrumb-item`, {
                     [`${block}__breadcrumb-item--active`]: feature.parts.some(
                       (part: any) => part.selected
                     ),
                   })}
-                  key={feature.id_category}
+                  key={feature.id}
                 ></div>
               ))}
             </div>
@@ -136,14 +102,11 @@ export default function BuilderPage() {
             </button>
           </div>
           <div className={`${block}__toolbar-body`}>
-            {builder?.features.map((feature: any) => (
-              <div
-                className={`${block}__toolbar-feature`}
-                key={feature.id_category}
-              >
+            {purchaseItem.categories?.map((feature: any) => (
+              <div className={`${block}__toolbar-feature`} key={feature.id}>
                 <div className={`${block}__toolbar-feature-category`}>
                   <div className={`${block}__toolbar-feature-category-label`}>
-                    {feature.category.label}
+                    {feature.label}
                   </div>
                   <div className={`${block}__toolbar-feature-parts`}>
                     {feature.parts?.map((part: any) => (
@@ -159,7 +122,7 @@ export default function BuilderPage() {
                           !part.disabled && handlePartClick(part, feature)
                         }
                       >
-                        {part.label}-{part.priceValue || 0}
+                        {part.label}-{part.priceValue || part.price || 0}
                       </div>
                     ))}
                   </div>

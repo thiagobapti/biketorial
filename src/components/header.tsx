@@ -70,7 +70,7 @@ export default function Header() {
                       {item.parts &&
                         item.parts.map((part: any, index: number) => (
                           <div key={index}>
-                            <Image
+                            {/* <Image
                               src={`/parts/${part.id || part.id_part}.png`}
                               alt={part.label}
                               width={120}
@@ -78,8 +78,10 @@ export default function Header() {
                               style={{
                                 borderRadius: "10px",
                               }}
-                            />
-                            {part.category_label} - {part.label}
+                            /> */}
+                            <div>
+                              {part.category_label} - {part.label}
+                            </div>
                           </div>
                         ))}
                     </div>

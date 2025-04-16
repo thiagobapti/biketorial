@@ -7,21 +7,21 @@ $block: "page";
   margin-top: 60px;
 
   &__part {
-    // border: solid 2px #373737;
     background-color: #ffffff;
     padding: 6px;
     border-radius: 8px;
-
     display: flex;
     flex-direction: column;
-    // width: 100px;
+
+    &--highlight {
+      border: solid 2px #373737;
+    }
   }
 
   &__container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    // border: solid 2px #373737;
     flex-wrap: wrap;
   }
 
