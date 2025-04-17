@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 type CartContextType = {
   items: any[];
+  totalPrice: number;
   updateItems: (items: any[]) => void;
   append: (item: any) => void;
   remove: (item: any) => void;
@@ -11,6 +12,7 @@ type CartContextType = {
 
 export const CartContext = createContext<CartContextType>({
   items: [],
+  totalPrice: 0,
   updateItems: () => {},
   append: () => {},
   remove: () => {},
@@ -22,13 +24,28 @@ export const CartContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [items, setItems] = useState<any[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
     const storedItems = localStorage.getItem("cartItems");
     if (storedItems) {
-      setItems(JSON.parse(storedItems));
+      const parsedItems = JSON.parse(storedItems);
+      setItems(parsedItems);
+      calculateTotalPrice(parsedItems);
     }
   }, []);
+
+  useEffect(() => {
+    calculateTotalPrice(items);
+  }, [items]);
+
+  const calculateTotalPrice = (cartItems: any[]) => {
+    let total = 0;
+    for (const item of cartItems) {
+      total += item.customPrice || item.price || 0;
+    }
+    setTotalPrice(total);
+  };
 
   const updateItems = (newItems: any[]) => {
     setItems(newItems);
@@ -49,6 +66,7 @@ export const CartContextProvider = ({
     <CartContext.Provider
       value={{
         items,
+        totalPrice,
         updateItems,
         append,
         remove,

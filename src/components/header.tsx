@@ -47,7 +47,7 @@ export default function Header() {
             className={`${block}__cart-drawer-header-title`}
             onClick={() => setIsCartDrawerOpen(!isCartDrawerOpen)}
           >
-            Cart
+            Cart-{cartContext.totalPrice}
           </div>
           <div>
             {cartContext.items.length === 0 ? (
