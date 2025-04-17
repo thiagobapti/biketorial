@@ -44,8 +44,8 @@ export default async function PartPage(props: { params: paramsType }) {
                   className={`${block}__part-image`}
                   src={`/parts/${part.id}.png`}
                   alt={part.label || ""}
-                  width={240}
-                  height={160}
+                  width={1536}
+                  height={1024}
                   priority
                 />
               </div>

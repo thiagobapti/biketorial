@@ -113,7 +113,8 @@ export const handlePartSelectionWithPriceCalculation = (
     return {
       ...item,
       parts: item.parts.map((_part: any) => {
-        const isDisabled = partsToDisable.includes(_part.id);
+        const isDisabled =
+          partsToDisable.includes(_part.id) || _part.quantity_available === 0;
         const selectedPriceRecord = findPriceRecord(
           _part,
           allSelectedParts,
