@@ -1,14 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-
-type CartContextType = {
-  items: any[];
-  totalPrice: number;
-  updateItems: (items: any[]) => void;
-  append: (item: any) => void;
-  remove: (item: any) => void;
-};
+import { CartContext as CartContextType } from "@/types";
 
 export const CartContext = createContext<CartContextType>({
   items: [],
@@ -28,6 +21,7 @@ export const CartContextProvider = ({
 
   useEffect(() => {
     const storedItems = localStorage.getItem("cartItems");
+
     if (storedItems) {
       const parsedItems = JSON.parse(storedItems);
       setItems(parsedItems);
@@ -41,6 +35,7 @@ export const CartContextProvider = ({
 
   const calculateTotalPrice = (cartItems: any[]) => {
     let total = 0;
+
     for (const item of cartItems) {
       total += item.customPrice || item.price || 0;
     }
@@ -54,11 +49,13 @@ export const CartContextProvider = ({
 
   const append = (item: any) => {
     const newItems = [...items, item];
+
     updateItems(newItems);
   };
 
   const remove = (item: any) => {
     const newItems = items.filter((i) => i !== item);
+
     updateItems(newItems);
   };
 

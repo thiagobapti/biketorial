@@ -28,10 +28,6 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
 
       const groupedParts = await getGroupedParts(part.id_category);
 
-      console.log("categories", groupedParts);
-
-      /////////
-
       const { updatedItems, totalPrice, isfulfilled, allSelectedParts } =
         handlePartSelectionWithPriceCalculation(
           null,
@@ -41,17 +37,12 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
         );
 
       setCategories(updatedItems);
-
       setPurchaseItem((prev) => ({
         ...prev,
         parts: [part, ...allSelectedParts],
         price: Number(part.price) + totalPrice,
         fulfilled: isfulfilled,
       }));
-
-      //fulfilled: (categories as Category[]).length === 0,
-
-      //////
     };
     fetchData();
   }, [part]);
@@ -69,7 +60,6 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
         );
 
       setCategories(updatedItems);
-
       setPurchaseItem((prev) => ({
         ...prev,
         parts: [part, ...allSelectedParts],
@@ -81,14 +71,7 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
   );
 
   const handleAddToCart = useCallback(() => {
-    if (purchaseItem.fulfilled) {
-      // if (!purchaseItem.parts) {
-      //   purchaseItem.parts = [part as Part];
-      //   purchaseItem.label = part?.label;
-      // }
-      console.log("purchaseItem", purchaseItem);
-      cartContext.append(purchaseItem);
-    }
+    if (purchaseItem.fulfilled) cartContext.append(purchaseItem);
   }, [purchaseItem, cartContext]);
 
   return (
