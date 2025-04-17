@@ -60,13 +60,13 @@ export default function Header() {
                   <div key={index}>
                     <div className={`${block}__cart-drawer-item`}>
                       <div className={`${block}__cart-drawer-item-title`}>
-                        {item.item?.label || `Unnamed Build`}
+                        {item.label || `Unnamed Build`}
                       </div>
                       <div className={`${block}__cart-drawer-item-price`}>
                         ${item.price}
                       </div>
                     </div>
-                    <div>
+                    <div className={`${block}__cart-drawer-item-parts`}>
                       {item.parts &&
                         item.parts.map((part: any, index: number) => (
                           <div key={index}>
@@ -80,7 +80,8 @@ export default function Header() {
                               }}
                             /> */}
                             <div>
-                              {part.category_label} - {part.label}
+                              {part.category_label} - {part.label} -{" "}
+                              {part.customPrice || part.price || 0}
                             </div>
                           </div>
                         ))}
@@ -93,18 +94,6 @@ export default function Header() {
                     </button>
                   </div>
                 ))}
-                <div className={`${block}__cart-drawer-total`}>
-                  <div className={`${block}__cart-drawer-total-title`}>
-                    Total
-                  </div>
-                  <div className={`${block}__cart-drawer-total-price`}>
-                    $
-                    {cartContext.items.reduce(
-                      (acc, item) => acc + (item.price || 0),
-                      0
-                    )}
-                  </div>
-                </div>
                 <div className={`${block}__cart-drawer-actions`}>
                   <button
                     className={`${block}__cart-drawer-checkout-button`}

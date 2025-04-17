@@ -1,12 +1,5 @@
 import { Part, Restriction } from "@/types";
 
-// export const getSelectedParts = (categories: any) => {
-//   const allSelectedParts = categories.flatMap((category: any) =>
-//     category.parts.filter((part: any) => part.selected)
-//   );
-//   return allSelectedParts;
-// };
-
 export const collectAllRestrictions = (categories: any): Restriction[] => {
   const allRestrictions: Restriction[] = [];
 
@@ -24,49 +17,44 @@ export const collectAllRestrictions = (categories: any): Restriction[] => {
 export const findPartsToDisable = (
   selectedParts: any[],
   allRestrictions: Restriction[]
-): Set<string> => {
-  const partsToDisable = new Set<string>();
+): string[] => {
+  const partsToDisable: string[] = [];
+  const selectedPartIds = selectedParts.map((part) => part.id);
 
-  selectedParts.forEach((selectedPart: any) => {
-    const incompatibilitiesAsSource = allRestrictions.filter(
-      (restriction) => restriction.id_part === selectedPart.id
-    );
+  allRestrictions.forEach((restriction) => {
+    if (selectedPartIds.includes(restriction.id_part)) {
+      if (!partsToDisable.includes(restriction.id_part_incompatible)) {
+        partsToDisable.push(restriction.id_part_incompatible);
+      }
+    }
 
-    const incompatibilitiesAsTarget = allRestrictions.filter(
-      (restriction) => restriction.id_part_incompatible === selectedPart.id
-    );
-
-    incompatibilitiesAsSource.forEach((incompatibility) => {
-      partsToDisable.add(incompatibility.id_part_incompatible);
-    });
-
-    incompatibilitiesAsTarget.forEach((incompatibility) => {
-      partsToDisable.add(incompatibility.id_part);
-    });
+    if (selectedPartIds.includes(restriction.id_part_incompatible)) {
+      if (!partsToDisable.includes(restriction.id_part)) {
+        partsToDisable.push(restriction.id_part);
+      }
+    }
   });
 
   return partsToDisable;
 };
 
-export const findPriceRecord = (part: any, selectedParts: any[]): any => {
-  const createDefaultPriceRecord = (part: any) => ({
-    price: part.price || 0,
-    base_price: part.base_price || 0,
-    id_related_part: null,
-  });
+export const findPriceRecord = (
+  part: any,
+  selectedParts: any[],
+  idBasePart?: string
+): any => {
+  if (idBasePart && part?.pricing) {
+    const basepartMatches = part.pricing.filter(
+      (pricingRecord: any) => pricingRecord.id_related_part === idBasePart
+    );
 
-  if (
-    !part.pricing ||
-    !Array.isArray(part.pricing) ||
-    part.pricing.length === 0
-  ) {
-    return createDefaultPriceRecord(part);
+    if (basepartMatches.length > 0) return basepartMatches;
   }
 
-  const relatedPartPricing = part.pricing.filter((priceRecord: any) => {
-    if (priceRecord.id_related_part) {
+  const pricingRecords = part?.pricing?.filter((pricingRecord: any) => {
+    if (pricingRecord.id_related_part) {
       const relatedPartSelected = selectedParts.some(
-        (selectedPart: any) => selectedPart.id === priceRecord.id_related_part
+        (selectedPart: any) => selectedPart.id === pricingRecord.id_related_part
       );
 
       return relatedPartSelected;
@@ -74,48 +62,48 @@ export const findPriceRecord = (part: any, selectedParts: any[]): any => {
     return false;
   });
 
-  if (relatedPartPricing.length > 0) {
-    return relatedPartPricing[0];
-  }
-
-  return createDefaultPriceRecord(part);
+  return pricingRecords;
 };
 
 export const handlePartSelectionWithPriceCalculation = (
   part: any,
   feature: any,
-  categories: any[]
+  categories: any[],
+  idBasePart?: string
 ) => {
   // Track all selected parts while updating the selection
   const allSelectedParts: Part[] = [];
 
-  const updatedCategories = categories.map((item: any) => {
-    if (item.id === feature.id) {
-      return {
-        ...item,
-        parts: item.parts.map((_part: any) => {
-          const isSelected = _part.id === part.id;
-          if (isSelected) {
+  let updatedCategories = categories;
+
+  if (feature && part) {
+    updatedCategories = categories.map((item: any) => {
+      if (item.id === feature.id) {
+        return {
+          ...item,
+          parts: item.parts.map((_part: any) => {
+            const isSelected = _part.id === part.id;
+            if (isSelected) {
+              allSelectedParts.push(_part);
+            }
+            return {
+              ..._part,
+              selected: isSelected,
+            };
+          }),
+        };
+      } else {
+        // For other categories, keep the existing selection
+        item.parts.forEach((_part: any) => {
+          if (_part.selected) {
             allSelectedParts.push(_part);
           }
-          return {
-            ..._part,
-            selected: isSelected,
-          };
-        }),
-      };
-    } else {
-      // For other categories, keep the existing selection
-      item.parts.forEach((_part: any) => {
-        if (_part.selected) {
-          allSelectedParts.push(_part);
-        }
-      });
-      return item;
-    }
-  });
+        });
+        return item;
+      }
+    });
+  }
 
-  // Calculate prices and disabled states
   const allRestrictions = collectAllRestrictions(updatedCategories);
   const partsToDisable = findPartsToDisable(allSelectedParts, allRestrictions);
 
@@ -125,19 +113,29 @@ export const handlePartSelectionWithPriceCalculation = (
     return {
       ...item,
       parts: item.parts.map((_part: any) => {
-        const isDisabled = partsToDisable.has(_part.id);
-        const selectedPriceRecord = findPriceRecord(_part, allSelectedParts);
+        const isDisabled = partsToDisable.includes(_part.id);
+        const selectedPriceRecord = findPriceRecord(
+          _part,
+          allSelectedParts,
+          idBasePart
+        );
 
-        if (_part.selected && selectedPriceRecord && !isDisabled) {
-          totalPrice += selectedPriceRecord.price;
+        if (_part.selected) {
+          totalPrice += selectedPriceRecord?.[0]?.price || _part.price;
         }
 
-        return {
-          ..._part,
+        const { customPrice, currentPriceRecord, ...rest } = _part;
+        const result = {
+          ...rest,
           disabled: isDisabled,
-          priceValue: selectedPriceRecord.price,
-          currentPriceRecord: selectedPriceRecord,
         };
+
+        if (selectedPriceRecord?.[0]) {
+          result.customPrice = selectedPriceRecord[0].price;
+          result.currentPriceRecord = selectedPriceRecord[0];
+        }
+
+        return result;
       }),
     };
   });

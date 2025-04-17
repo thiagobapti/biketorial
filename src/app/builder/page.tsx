@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import cn from "classnames";
 import { CartContext } from "@/contexts/cart";
 import { handlePartSelectionWithPriceCalculation } from "@/util/misc";
-import { PurchaseItem } from "@/types";
+import { Category, PurchaseItem } from "@/types";
 const block = "builder-page";
 
 export type Restriction = {
@@ -18,24 +18,24 @@ export default function BuilderPage() {
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
     fulfilled: false,
     price: 0,
+    label: "Custom Build",
+    id_builder: "b1ac25e7-90e1-463b-9efd-fe075da00ea3",
   });
   enum State {
     Default = "default",
   }
   const [state, setState] = useState<State>(State.Default);
   const cartContext = useContext(CartContext);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchBuilder = async () => {
       const response = await fetch("/api/builder");
       const builder = await response.json();
+      setCategories(builder.categories);
 
       setPurchaseItem((prevPurchaseItem) => ({
         ...prevPurchaseItem,
-        categories: builder.categories,
-        item: {
-          label: builder.label,
-        },
         id_builder: builder.id,
       }));
     };
@@ -43,18 +43,15 @@ export default function BuilderPage() {
   }, []);
 
   const handlePartClick = (part: any, feature: any) => {
-    if (!purchaseItem.categories) return;
+    if (!categories) return;
 
     const { updatedItems, totalPrice, isfulfilled, allSelectedParts } =
-      handlePartSelectionWithPriceCalculation(
-        part,
-        feature,
-        purchaseItem.categories
-      );
+      handlePartSelectionWithPriceCalculation(part, feature, categories);
+
+    setCategories(updatedItems);
 
     setPurchaseItem({
       ...purchaseItem,
-      categories: updatedItems,
       parts: allSelectedParts,
       price: totalPrice,
       fulfilled: isfulfilled,
@@ -71,10 +68,10 @@ export default function BuilderPage() {
         <div className={`${block}__toolbar`}>
           <div className={`${block}__toolbar-header`}>
             <div className={`${block}__toolbar-header-label`}>
-              {purchaseItem.item?.label} - Total Price: {purchaseItem.price}
+              {purchaseItem.label} - Total Price: {purchaseItem.price}
             </div>
             <div className={`${block}__breadcrumb`}>
-              {purchaseItem.categories?.map((feature: any) => (
+              {categories?.map((feature: any) => (
                 <div
                   className={cn(`${block}__breadcrumb-item`, {
                     [`${block}__breadcrumb-item--active`]: feature.parts.some(
@@ -102,7 +99,7 @@ export default function BuilderPage() {
             </button>
           </div>
           <div className={`${block}__toolbar-body`}>
-            {purchaseItem.categories?.map((feature: any) => (
+            {categories?.map((feature: any) => (
               <div className={`${block}__toolbar-feature`} key={feature.id}>
                 <div className={`${block}__toolbar-feature-category`}>
                   <div className={`${block}__toolbar-feature-category-label`}>
@@ -122,7 +119,7 @@ export default function BuilderPage() {
                           !part.disabled && handlePartClick(part, feature)
                         }
                       >
-                        {part.label}-{part.priceValue || part.price || 0}
+                        {part.label}-{part.customPrice || part.price || 0}
                       </div>
                     ))}
                   </div>

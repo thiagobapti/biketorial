@@ -6,53 +6,54 @@ import Link from "next/link";
 import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { PartConfigurator } from "./part-configurator";
-import { Part, SafeState } from "@/types";
+import { Part } from "@/types";
 
 const block = "part-page";
 
 export type paramsType = Promise<{ id: string }>;
 
 export default async function PartPage(props: { params: paramsType }) {
+  const STATE_DEFAULT = "default";
+  const STATE_ERROR = "error";
+  let state: string = STATE_DEFAULT;
   const { id } = await props.params;
 
-  const fetchData = async (): Promise<SafeState<Part>> => {
-    const result = await getParts(id);
-    return result && typeof result === "object"
-      ? { status: "success", data: result[0] }
-      : { status: "error" };
+  const fetchData = async () => {
+    try {
+      return await getParts(id);
+    } catch (error) {
+      state = STATE_ERROR;
+    }
   };
 
-  const part = await fetchData();
+  const part: Part = ((await fetchData()) as Part[])[0] as Part;
 
   return (
     <div className={block}>
       <div className={`${block}__container container`}>
-        {part.status === "error" && <div>Error...</div>}
-        {part.status === "success" && (
-          <div>
+        {state === STATE_ERROR && <div>Error...</div>}
+        {state === STATE_DEFAULT && part !== undefined && (
+          <div className={`${block}__part-wrapper`}>
             <div>
               Biketorial
               <Link href="/builder">Builder</Link>
             </div>
-            <div className={`${block}__gallery`}>
-              <div className={`${block}__gallery-media`}>
-                <div className={`${block}__part`} key={part.data.id}>
-                  <Image
-                    className={`${block}__part-image`}
-                    src={`/parts/${part.data.id}.png`}
-                    alt={part.data.label || ""}
-                    width={240}
-                    height={160}
-                    priority
-                  />
-                </div>
+            <div className={`${block}__part`}>
+              <div className={`${block}__part-image-wrapper`}>
+                <Image
+                  className={`${block}__part-image`}
+                  src={`/parts/${part.id}.png`}
+                  alt={part.label || ""}
+                  width={240}
+                  height={160}
+                  priority
+                />
               </div>
-              <div className={`${block}__gallery-info`}>
-                <div className={`${block}__part`} key={part.data.id}>
-                  {/* <div>{category?.label}</div> */}
-                  {part.data.label}-{part.data.price}
-                  <PartConfigurator part={part.data} />
-                </div>
+              <div className={`${block}__part-info`}>
+                <div>{part.category_label}</div>
+                <div>{part.label}</div>
+                <div>{part.price}</div>
+                <PartConfigurator part={part} />
               </div>
             </div>
           </div>

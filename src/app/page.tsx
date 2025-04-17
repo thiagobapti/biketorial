@@ -5,8 +5,8 @@ import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { Part } from "@/types";
 import ReloadButton from "./reload-button";
-const block = "page";
 
+const block = "page";
 export default async function Page() {
   const STATE_DEFAULT = "default";
   const STATE_ERROR = "error";

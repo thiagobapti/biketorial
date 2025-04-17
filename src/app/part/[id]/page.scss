@@ -14,7 +14,7 @@ $block: "part-page";
     flex-wrap: wrap;
   }
 
-  &__gallery {
+  &__part {
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
@@ -26,11 +26,11 @@ $block: "part-page";
     }
   }
 
-  &__gallery-media {
+  &__part-image-wrapper {
     flex: 1;
   }
 
-  &__gallery-info {
+  &__part-info {
     flex: 1;
   }
 

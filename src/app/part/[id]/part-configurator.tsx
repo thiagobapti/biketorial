@@ -8,7 +8,7 @@ import "./part-configurator.scss";
 import { CartContext } from "@/contexts/cart";
 import { getGroupedParts } from "@/backend/store";
 type PartConfiguratorProps = {
-  part?: Part;
+  part: Part;
 };
 
 const block = "part-configurator";
@@ -17,20 +17,41 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
     fulfilled: false,
-    price: 0,
+    price: part.price,
+    parts: [part],
+    label: part.category_label,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       if (!part?.id) return;
 
-      const categories = await getGroupedParts(part.id_category);
-      console.log(categories);
-      setCategories(categories as Category[]);
+      const groupedParts = await getGroupedParts(part.id_category);
+
+      console.log("categories", groupedParts);
+
+      /////////
+
+      const { updatedItems, totalPrice, isfulfilled, allSelectedParts } =
+        handlePartSelectionWithPriceCalculation(
+          null,
+          null,
+          groupedParts as Category[],
+          part.id
+        );
+
+      setCategories(updatedItems);
+
       setPurchaseItem((prev) => ({
         ...prev,
-        categories: categories as Category[],
+        parts: [part, ...allSelectedParts],
+        price: Number(part.price) + totalPrice,
+        fulfilled: isfulfilled,
       }));
+
+      //fulfilled: (categories as Category[]).length === 0,
+
+      //////
     };
     fetchData();
   }, [part]);
@@ -43,29 +64,38 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
         handlePartSelectionWithPriceCalculation(
           _part,
           category,
-          purchaseItem.categories as Category[]
+          categories as Category[],
+          part.id
         );
 
-      setPurchaseItem({
-        ...purchaseItem,
-        categories: updatedItems,
+      setCategories(updatedItems);
+
+      setPurchaseItem((prev) => ({
+        ...prev,
         parts: [part, ...allSelectedParts],
-        price: totalPrice,
+        price: Number(part.price) + totalPrice,
         fulfilled: isfulfilled,
-      });
+      }));
     },
-    [purchaseItem, part]
+    [part, categories]
   );
 
   const handleAddToCart = useCallback(() => {
-    cartContext.append(purchaseItem);
+    if (purchaseItem.fulfilled) {
+      // if (!purchaseItem.parts) {
+      //   purchaseItem.parts = [part as Part];
+      //   purchaseItem.label = part?.label;
+      // }
+      console.log("purchaseItem", purchaseItem);
+      cartContext.append(purchaseItem);
+    }
   }, [purchaseItem, cartContext]);
 
   return (
     <div className={block}>
       Price: {purchaseItem.price}
-      {purchaseItem.categories &&
-        purchaseItem.categories?.map((category: any) => (
+      {categories &&
+        categories?.map((category: any) => (
           <div className={`${block}__toolbar-feature`} key={category.id}>
             <div className={`${block}__toolbar-feature-category`}>
               <div className={`${block}__toolbar-feature-category-label`}>
@@ -82,7 +112,7 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
                     !part.disabled && handlePartSelection(part, category)
                   }
                 >
-                  {part.label}/Price: {part.price}
+                  {part.label}/Price: {part.customPrice || part.price}
                 </div>
               ))}
             </div>
