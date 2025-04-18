@@ -7,6 +7,7 @@ import { handlePartSelectionWithPriceCalculation } from "@/util/misc";
 import "./part-configurator.scss";
 import { CartContext } from "@/contexts/cart";
 import { getGroupedParts } from "@/backend/store";
+import CategoryPartSelector from "@/components/category-part-selector";
 type PartConfiguratorProps = {
   part: Part;
 };
@@ -79,27 +80,11 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
       Price: {purchaseItem.price}
       {categories &&
         categories?.map((category: any) => (
-          <div className={`${block}__toolbar-feature`} key={category.id}>
-            <div className={`${block}__toolbar-feature-category`}>
-              <div className={`${block}__toolbar-feature-category-label`}>
-                {category.label}
-              </div>
-              {category.parts.map((part: any) => (
-                <div
-                  className={cn(`${block}__toolbar-feature-part`, {
-                    [`${block}__toolbar-feature-part--disabled`]: part.disabled,
-                    [`${block}__toolbar-feature-part--selected`]: part.selected,
-                  })}
-                  key={part.id}
-                  onClick={() =>
-                    !part.disabled && handlePartSelection(part, category)
-                  }
-                >
-                  {part.label}/Price: {part.customPrice || part.price}
-                </div>
-              ))}
-            </div>
-          </div>
+          <CategoryPartSelector
+            feature={category}
+            selectionChangeHandler={handlePartSelection}
+            key={category.id}
+          />
         ))}
       <button onClick={handleAddToCart} disabled={!purchaseItem.fulfilled}>
         Add to cart

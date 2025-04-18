@@ -5,6 +5,7 @@ import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { Part } from "@/types";
 import ReloadButton from "./reload-button";
+import hero from "@/assets/hero.png";
 
 const block = "page";
 export default async function Page() {
@@ -33,9 +34,29 @@ export default async function Page() {
         )}
         {state === STATE_DEFAULT && parts !== undefined && (
           <div className={`${block}__gallery-wrapper`}>
-            <div>
-              Biketorial
-              <Link href="/builder">Builder</Link>
+            <div className={`${block}__hero`}>
+              <div className={`${block}__hero-text`}>
+                <div className={`${block}__hero-text-headline`}>
+                  The perfect bike doesn’t exist. Until you build it.
+                </div>
+
+                <div className={`${block}__hero-text-subtext`}>
+                  Explore the possibilities and build your dream setup with our
+                  AI-powered configurator.
+                </div>
+                <Link className={`${block}__hero-cta`} href="/builder">
+                  Open bike builder
+                </Link>
+              </div>
+              <div className={`${block}__hero-image`}>
+                <Image
+                  className={`${block}__hero-image-img`}
+                  src={hero}
+                  alt="Biketorial"
+                  width={480}
+                  height={480}
+                />
+              </div>
             </div>
             {parts.length > 0 ? (
               <div className={`${block}__gallery`}>

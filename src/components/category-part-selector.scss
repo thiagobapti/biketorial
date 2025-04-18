@@ -1,0 +1,55 @@
+$block: "category-part-selector";
+
+.#{$block} {
+  & + & {
+    margin-top: 20px;
+  }
+
+  &__category-label {
+    // background-color: #373737;
+    font-weight: 800;
+    color: #e5c770;
+  }
+
+  &__parts {
+    display: flex;
+    flex-direction: column;
+    // flex-wrap: wrap;
+    // justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  &__part {
+    $part: &;
+
+    color: #cfcfcf;
+    display: flex;
+    border-radius: 4px;
+    background-color: #4b4b4b;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 15px;
+    margin-bottom: 3px;
+    padding: 2px 8px;
+
+    &--selected {
+      background-color: #e5c770;
+      color: #000;
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+
+    &:hover:not(&--disabled):not(&--selected) {
+      background-color: #5b5b5b;
+    }
+  }
+
+  &__part-price {
+    font-size: 13px;
+    font-weight: 800;
+  }
+}

@@ -4,8 +4,14 @@ import "./page.scss";
 import { useContext, useEffect, useState } from "react";
 import cn from "classnames";
 import { CartContext } from "@/contexts/cart";
-import { handlePartSelectionWithPriceCalculation } from "@/util/misc";
+import {
+  handlePartSelectionWithPriceCalculation,
+  formatAsDollar,
+} from "@/util/misc";
 import { Category, PurchaseItem } from "@/types";
+import { build } from "@/backend/builder";
+import Image from "next/image";
+import CategoryPartSelector from "@/components/category-part-selector";
 const block = "builder-page";
 
 export type Restriction = {
@@ -43,6 +49,7 @@ export default function BuilderPage() {
         id_builder: builder.id,
         price: totalPrice,
         fulfilled: isfulfilled,
+        parts: allSelectedParts,
       }));
     };
     fetchBuilder();
@@ -68,6 +75,19 @@ export default function BuilderPage() {
     cartContext.append(purchaseItem);
   };
 
+  const handleGenerateImage = async () => {
+    const prompt =
+      "A realistic photo of a moss green step-through bicycle with a very low or absent top tube, designed for easy mounting. Full side view, professional photo studio with solid vibrant pink-red background (#ff2450), minimalist and clean";
+
+    const result = await build(prompt);
+    console.log(result);
+
+    setPurchaseItem({
+      ...purchaseItem,
+      image: result.imageUrl,
+    });
+  };
+
   return (
     <div className={block}>
       <div className={`${block}__container container`}>
@@ -85,27 +105,27 @@ export default function BuilderPage() {
                 <div className={`${block}__toolbar-header-label`}>
                   {purchaseItem.label} - Total Price: {purchaseItem.price}
                 </div>
-                <div className={`${block}__breadcrumb`}>
-                  {categories?.map((feature: any) => (
-                    <div
-                      className={cn(`${block}__breadcrumb-item`, {
-                        [`${block}__breadcrumb-item--active`]:
-                          feature.parts.some((part: any) => part.selected),
-                      })}
-                      key={feature.id}
-                    ></div>
-                  ))}
-                </div>
               </div>
               <div className={`${block}__toolbar-actions`}>
                 <button
                   className={`${block}__toolbar-actions-button`}
                   disabled={!purchaseItem.fulfilled}
+                  onClick={handleGenerateImage}
+                  style={
+                    {
+                      "--fill-width": `${
+                        categories.length > 0 && purchaseItem.parts?.length
+                          ? (purchaseItem?.parts?.length / categories.length) *
+                            100
+                          : 0
+                      }%`,
+                    } as React.CSSProperties
+                  }
                 >
-                  View
+                  <span className={`${block}__cta-text`}>Preview</span>
                 </button>
                 <button
-                  className={`${block}__toolbar-actions-button`}
+                  className={`${block}__toolbar-actions-button2`}
                   onClick={handleAddToCart}
                   disabled={!purchaseItem.fulfilled}
                 >
@@ -114,37 +134,25 @@ export default function BuilderPage() {
               </div>
               <div className={`${block}__toolbar-body`}>
                 {categories?.map((feature: any) => (
-                  <div className={`${block}__toolbar-feature`} key={feature.id}>
-                    <div className={`${block}__toolbar-feature-category`}>
-                      <div
-                        className={`${block}__toolbar-feature-category-label`}
-                      >
-                        {feature.label}
-                      </div>
-                      <div className={`${block}__toolbar-feature-parts`}>
-                        {feature.parts?.map((part: any) => (
-                          <div
-                            className={cn(`${block}__toolbar-feature-part`, {
-                              [`${block}__toolbar-feature-part--disabled`]:
-                                part.disabled,
-                              [`${block}__toolbar-feature-part--selected`]:
-                                part.selected,
-                            })}
-                            key={part.id}
-                            onClick={() =>
-                              !part.disabled && handlePartClick(part, feature)
-                            }
-                          >
-                            {part.label}-{part.customPrice || part.price || 0}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <CategoryPartSelector
+                    feature={feature}
+                    selectionChangeHandler={handlePartClick}
+                    key={feature.id}
+                  />
                 ))}
               </div>
             </div>
-            <div className={`${block}__preview`}>a</div>
+            <div className={`${block}__preview`}>
+              {purchaseItem.image && (
+                <Image
+                  className={`${block}__preview-image`}
+                  src={purchaseItem.image}
+                  alt="Bike"
+                  width={240}
+                  height={160}
+                />
+              )}
+            </div>
           </div>
         )}
       </div>

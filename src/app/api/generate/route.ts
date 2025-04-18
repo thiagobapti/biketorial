@@ -3,7 +3,10 @@ import { build } from "@/backend/builder";
 
 export async function POST(request: NextRequest) {
   try {
-    const result = await build();
+    const prompt =
+      "A realistic photo of a moss green step-through bicycle with a very low or absent top tube, designed for easy mounting. Full side view, professional photo studio with solid vibrant pink-red background (#ff2450), minimalist and clean";
+
+    const result = await build(prompt);
 
     if (!result.success) {
       throw new Error(result.error || "Failed to generate content");

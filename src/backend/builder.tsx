@@ -4,7 +4,7 @@ import { createClient } from "@vercel/postgres";
 
 import OpenAI from "openai";
 
-export async function build() {
+export async function build(prompt: string) {
   try {
     const client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
@@ -12,8 +12,7 @@ export async function build() {
 
     const response = await client.images.generate({
       model: "dall-e-3",
-      prompt:
-        "A realistic photo of a moss green step-through bicycle with a very low or absent top tube, designed for easy mounting. Full side view, professional photo studio with solid vibrant pink-red background (#ff2450), minimalist and clean",
+      prompt: prompt,
       size: "1024x1024",
     });
 

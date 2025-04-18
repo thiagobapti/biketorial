@@ -24,6 +24,7 @@ export type PurchaseItem = {
   parts?: Part[];
   id_builder?: string;
   label?: string;
+  image?: string;
 };
 
 export type Restriction = {
