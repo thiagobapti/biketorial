@@ -6,6 +6,7 @@ import cn from "classnames";
 import { Part } from "@/types";
 import ReloadButton from "./reload-button";
 import hero from "@/assets/hero.png";
+import { formatAsDollar } from "@/util/misc";
 
 const block = "page";
 export default async function Page() {
@@ -25,7 +26,7 @@ export default async function Page() {
 
   return (
     <div className={block}>
-      <div className={`${block}__container container`}>
+      <div className={`${block}__container`}>
         {state === STATE_ERROR && (
           <div>
             Error...
@@ -35,71 +36,80 @@ export default async function Page() {
         {state === STATE_DEFAULT && parts !== undefined && (
           <div className={`${block}__gallery-wrapper`}>
             <div className={`${block}__hero`}>
-              <div className={`${block}__hero-text`}>
-                <div className={`${block}__hero-text-headline`}>
-                  The perfect bike doesn’t exist. Until you build it.
-                </div>
+              <div className={`${block}__hero-container container`}>
+                <div className={`${block}__hero-text`}>
+                  <div className={`${block}__hero-text-headline`}>
+                    The perfect bike doesn’t exist. Until you build it.
+                  </div>
 
-                <div className={`${block}__hero-text-subtext`}>
-                  Explore the possibilities and build your dream setup with our
-                  AI-powered configurator.
+                  <div className={`${block}__hero-text-subtext`}>
+                    Explore the possibilities and build your dream setup with
+                    our AI-powered configurator.
+                  </div>
+                  <Link className={`${block}__hero-cta`} href="/builder">
+                    Build mine
+                  </Link>
                 </div>
-                <Link className={`${block}__hero-cta`} href="/builder">
-                  Open bike builder
-                </Link>
-              </div>
-              <div className={`${block}__hero-image`}>
-                <Image
-                  className={`${block}__hero-image-img`}
-                  src={hero}
-                  alt="Biketorial"
-                  width={480}
-                  height={480}
-                />
+                <div className={`${block}__hero-image`}>
+                  <Image
+                    className={`${block}__hero-image-img`}
+                    src={hero}
+                    alt="Biketorial"
+                    width={480}
+                    height={480}
+                  />
+                </div>
               </div>
             </div>
-            {parts.length > 0 ? (
-              <div className={`${block}__gallery`}>
-                {(parts as Part[]).map((part: Part) => (
-                  <div
-                    className={cn(`${block}__part`, {
-                      [`${block}__part--highlight`]: part.highlight,
-                    })}
-                    key={part.id}
-                  >
-                    <Image
-                      className={`${block}__part-image`}
-                      src={`/parts/${part.id}.png`}
-                      alt={part.label}
-                      width={240}
-                      height={160}
-                    />
-                    <div>
-                      {!part.quantity_available && (
-                        <div className={`${block}__part-sold-out`}>
-                          Sold Out
-                        </div>
-                      )}
-                    </div>
-                    <div className={`${block}__part-info`}>
-                      <div className={`${block}__part-category`}>
-                        {part.category_label}
-                      </div>
-                      <div className={`${block}__part-label`}>{part.label}</div>
-                      <div className={`${block}__part-price`}>{part.price}</div>
-                    </div>
-                    <Link
-                      className={`${block}__part-link`}
-                      href={`/part/${part.id}`}
+            <div className={`container`}>
+              <div className={`${block}__gallery-headline`}>Featured parts</div>
+              {parts.length > 0 ? (
+                <div className={`${block}__gallery `}>
+                  {(parts as Part[]).map((part: Part) => (
+                    <div
+                      className={cn(`${block}__part`, {
+                        [`${block}__part--highlight`]: part.highlight,
+                      })}
+                      key={part.id}
                     >
-                      View
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div>No results</div>
-            )}
+                      <Image
+                        className={`${block}__part-image`}
+                        src={`/parts/${part.id}.png`}
+                        alt={part.label}
+                        width={280}
+                        height={180}
+                      />
+                      <div>
+                        {!part.quantity_available && (
+                          <div className={`${block}__part-sold-out`}>
+                            Sold Out
+                          </div>
+                        )}
+                      </div>
+                      <div className={`${block}__part-info`}>
+                        <div className={`${block}__part-label`}>
+                          {part.label}
+                          <span className="lowercase">
+                            &nbsp;{part.category_label}
+                          </span>
+                        </div>
+                        <div className={`${block}__part-price`}>
+                          From ${formatAsDollar(part.price)}
+                        </div>
+                      </div>
+                      <Link
+                        className={`${block}__part-link`}
+                        href={`/part/${part.id}`}
+                      >
+                        View
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div>No results</div>
+              )}
+            </div>
           </div>
         )}
       </div>

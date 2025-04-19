@@ -9,6 +9,9 @@ export const CartContext = createContext<CartContextType>({
   updateItems: () => {},
   append: () => {},
   remove: () => {},
+  isOpen: false,
+  setIsOpen: () => {},
+  toggleCartDrawer: () => {},
 });
 
 export const CartContextProvider = ({
@@ -18,7 +21,7 @@ export const CartContextProvider = ({
 }) => {
   const [items, setItems] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
-
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   useEffect(() => {
     const storedItems = localStorage.getItem("cartItems");
 
@@ -59,6 +62,10 @@ export const CartContextProvider = ({
     updateItems(newItems);
   };
 
+  const toggleCartDrawer = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -67,6 +74,9 @@ export const CartContextProvider = ({
         updateItems,
         append,
         remove,
+        isOpen,
+        setIsOpen,
+        toggleCartDrawer,
       }}
     >
       {children}

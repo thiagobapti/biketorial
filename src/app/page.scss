@@ -1,16 +1,18 @@
 $block: "page";
 
 .#{$block} {
-  display: flex;
-  flex-direction: row;
   margin-top: 60px;
-
-  height: 2000px;
+  width: 100%;
 
   &__hero {
+    padding-top: 80px;
+    background-color: #20201f;
+    padding-bottom: 80px;
+  }
+
+  &__hero-container {
     display: flex;
     flex-direction: column;
-    padding-top: 100px;
 
     @include desktop {
       flex-direction: row;
@@ -21,10 +23,13 @@ $block: "page";
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
   }
 
   &__hero-image {
     flex: 1;
+    display: flex;
+    justify-content: flex-end;
   }
 
   &__hero-image-img {
@@ -32,25 +37,37 @@ $block: "page";
   }
 
   &__hero-text-headline {
-    font-size: 60px;
+    font-size: 58px;
     font-weight: 800;
-    color: #373737;
+    color: #fff;
+  }
+
+  &__gallery-headline {
+    font-size: 48px;
+    font-weight: 800;
+    // color: #fff;
+    margin-top: 100px;
   }
 
   &__hero-text-subtext {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    color: #373737;
+    color: #e18e00;
     margin-top: 10px;
   }
 
   &__hero-cta {
-    background-color: #373737;
-    color: #ffffff;
-    padding: 10px 20px;
-    border-radius: 12px;
+    background-color: #e18e00;
+    color: #000;
+    padding: 0 30px;
+    border-radius: 24px;
+    font-weight: 700;
     text-decoration: none;
-    margin-top: 10px;
+    margin-top: 30px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__part {
@@ -59,37 +76,15 @@ $block: "page";
     border-radius: 8px;
     display: flex;
     flex-direction: column;
+    width: calc(50% - 8px);
+    align-items: center;
 
-    box-shadow: 0px 36px 89px #0000000a, 0px 23.3333px 52.1227px #00000008,
-      0px 13.8667px 28.3481px rgba(0, 0, 0, 0.024),
-      0px 7.2px 14.4625px #00000005,
-      0px 2.93333px 7.25185px rgba(0, 0, 0, 0.016),
-      0px 0.666667px 3.50231px #00000003;
+    // &--highlight {
+    //   border: solid 2px #373737;
+    // }
 
-    border-bottom-color: rgba(0, 0, 0, 0.1);
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-image-outset: 0;
-    border-image-repeat: stretch;
-    border-image-slice: 100%;
-    border-image-source: none;
-    border-image-width: 1;
-    border-left-color: rgba(0, 0, 0, 0.1);
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-right-color: rgba(0, 0, 0, 0.1);
-    border-right-style: solid;
-    border-right-width: 1px;
-    border-top-color: rgba(0, 0, 0, 0.1);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-top-style: solid;
-    border-top-width: 1px;
-
-    &--highlight {
-      border: solid 2px #373737;
+    @include desktop {
+      width: calc(25% - 8px);
     }
   }
 
@@ -103,32 +98,39 @@ $block: "page";
   &__gallery {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 10px;
     flex-wrap: wrap;
     margin-top: 100px;
+    padding-bottom: 100px;
 
     @include desktop {
-      margin-top: 0;
+      margin-top: 40px;
     }
   }
 
   &__part-image {
-    width: 240px;
-    height: 160px;
+    width: 100%;
+    height: auto;
     border-radius: 10px;
+
+    @include desktop {
+      max-width: 280px;
+    }
   }
 
   &__part-link {
-    background-color: #d07f14;
-    font-weight: 600;
+    background-color: #000;
+    font-weight: 700;
+    font-size: 14px;
     color: #ffffff;
-    padding: 0.5rem 1rem;
+    padding: 0 30px;
     border-radius: 8px;
     text-decoration: none;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    height: 28px;
   }
 
   &__part-info {
@@ -140,12 +142,6 @@ $block: "page";
     font-size: 16px;
   }
 
-  &__part-category {
-    font-size: 15px;
-    font-weight: 800;
-    color: #9a9a9a;
-  }
-
   &__part-label {
     font-weight: 600;
     font-size: 16px;
@@ -153,7 +149,8 @@ $block: "page";
 
   &__part-price {
     font-size: 16px;
-    font-weight: 600;
-    color: #373737;
+    font-weight: 700;
+    color: #6d3100;
+    margin-top: 10px;
   }
 }

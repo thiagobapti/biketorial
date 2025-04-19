@@ -73,6 +73,7 @@ export default function BuilderPage() {
 
   const handleAddToCart = () => {
     cartContext.append(purchaseItem);
+    cartContext.toggleCartDrawer();
   };
 
   const handleGenerateImage = async () => {

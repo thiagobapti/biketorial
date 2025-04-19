@@ -13,10 +13,11 @@ import { getGroupedParts } from "@/backend/store";
 import CategoryPartSelector from "@/components/category-part-selector";
 type PartConfiguratorProps = {
   part: Part;
+  className?: string;
 };
 
 const block = "part-configurator";
-export function PartConfigurator({ part }: PartConfiguratorProps) {
+export function PartConfigurator({ part, className }: PartConfiguratorProps) {
   const cartContext = useContext(CartContext);
   const [categories, setCategories] = useState<Category[]>([]);
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
@@ -75,11 +76,14 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
   );
 
   const handleAddToCart = useCallback(() => {
-    if (purchaseItem.fulfilled) cartContext.append(purchaseItem);
+    if (purchaseItem.fulfilled) {
+      cartContext.append(purchaseItem);
+      cartContext.toggleCartDrawer();
+    }
   }, [purchaseItem, cartContext]);
 
   return (
-    <div className={block}>
+    <div className={cn(block, className)}>
       {categories?.map((category: any) => (
         <CategoryPartSelector
           feature={category}

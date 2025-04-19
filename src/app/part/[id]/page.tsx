@@ -7,6 +7,8 @@ import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { PartConfigurator } from "./part-configurator";
 import { Part } from "@/types";
+import { ChevronRight } from "lucide-react";
+import { formatAsDollar } from "@/util/misc";
 
 const block = "part-page";
 
@@ -30,17 +32,21 @@ export default async function PartPage(props: { params: paramsType }) {
 
   return (
     <div className={block}>
-      <div className={`${block}__container container`}>
+      <div className={`${block}__container`}>
         {state === STATE_ERROR && <div>Error...</div>}
         {state === STATE_DEFAULT && part !== undefined && (
           <div className={`${block}__part-wrapper`}>
             <div className={`${block}__part-header`}>
-              <div className={`${block}__header-title`}>
-                {part.label}&nbsp;
-                <span className="lowercase">{part.category_label}</span>
+              <div className="container">
+                <div className={`${block}__header-title`}>
+                  {part.category_label}{" "}
+                  <ChevronRight width={20} height={20} strokeWidth={3} />{" "}
+                  {part.label}&nbsp;
+                  <span className="lowercase">{part.category_label}</span>
+                </div>
               </div>
             </div>
-            <div className={`${block}__part`}>
+            <div className={`${block}__part container`}>
               <div className={`${block}__part-image-wrapper`}>
                 <Image
                   className={`${block}__part-image`}
@@ -52,12 +58,24 @@ export default async function PartPage(props: { params: paramsType }) {
                 />
                 {part.description && (
                   <div className={`${block}__part-description`}>
+                    <div className={`${block}__part-description-label`}>
+                      Description
+                    </div>
                     {part.description}
                   </div>
                 )}
               </div>
               <div className={`${block}__part-info`}>
-                <PartConfigurator part={part} />
+                <div className={`${block}__part-description`}>
+                  <div className={`${block}__part-description-label`}>
+                    Base price
+                  </div>
+                  ${formatAsDollar(part.price)}
+                </div>
+                <PartConfigurator
+                  className={`${block}__part-configurator`}
+                  part={part}
+                />
               </div>
             </div>
           </div>

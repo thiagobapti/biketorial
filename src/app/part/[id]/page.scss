@@ -15,29 +15,37 @@ $block: "part-page";
     flex-wrap: wrap;
   }
 
+  &__part-header {
+    // background-color: #363532;
+    padding: 20px 0;
+  }
+
   &__header-title {
-    color: #373737;
-    font-weight: 800;
-    font-size: 24px;
-    margin-top: 20px;
+    color: #20201f;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // margin-top: 20px;
 
     @include desktop {
-      font-size: 60px;
-      margin-top: 40px;
+      font-size: 16px;
+      // margin-top: 40px;
     }
   }
 
   &__part {
     display: flex;
     flex-direction: column;
-    // background-color: #ffffff;
+    background-color: #20201f;
     border-radius: 8px;
     // padding: 6px;
-    margin-top: 20px;
+    // margin-top: 20px;
     align-items: flex-start;
 
     @include desktop {
-      margin-top: 30px;
+      // margin-top: 30px;
       flex-direction: row;
     }
   }
@@ -45,39 +53,56 @@ $block: "part-page";
   &__part-image-wrapper {
     flex: 1;
 
-    // background-color: #fff;
+    // background-color: #20201f;
     // margin: 20px 0 20px 20px;
     border-radius: 8px;
-    // padding: 10px;
+    padding: 10px 10px 0px 10px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 
     @include desktop {
-      margin-right: 10px;
+      padding: 10px 10px 20px 10px;
     }
   }
 
   &__part-description {
     font-size: 16px;
     font-weight: 500;
-    color: #373737;
-    margin-top: 10px;
+    color: #e7e5d8;
+    // margin-top: 10px;
 
     @include desktop {
-      margin-top: 30px;
+      // margin-top: 20px;
     }
+  }
+
+  &__part-description-label {
+    font-weight: 700;
+    color: #e18e00;
+    margin-bottom: 6px;
   }
 
   &__part-info {
     width: 100%;
-    background-color: #373737;
+    // background-color: #373737;
     // margin: 20px 0 20px 20px;
     border-radius: 8px;
-    padding: 10px;
-    margin-top: 20px;
+    padding: 12px 10px 10px 10px;
+    // margin-top: 20px;
+
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
 
     @include desktop {
       width: 300px;
       margin-top: 0;
+      border-radius: 8px;
+      padding: 10px 20px 10px 10px;
     }
+  }
+
+  &__part-configurator {
+    margin-top: 20px;
   }
 
   &__part-image {
@@ -86,5 +111,6 @@ $block: "part-page";
     // height: 100%;
     // object-fit: cover;
     border-radius: 6px;
+    margin-bottom: 14px;
   }
 }

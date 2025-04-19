@@ -9,6 +9,10 @@ export type Part = {
   highlight?: boolean;
   description?: string;
   customPrice?: number;
+  pricing?: {
+    price: number;
+    id_related_part: string;
+  }[];
 };
 
 export type Category = {
@@ -39,4 +43,7 @@ export type CartContext = {
   updateItems: (items: any[]) => void;
   append: (item: any) => void;
   remove: (item: any) => void;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  toggleCartDrawer: () => void;
 };
