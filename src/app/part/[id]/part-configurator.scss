@@ -35,4 +35,28 @@ $block: "part-configurator";
       opacity: 0.5;
     }
   }
+
+  &__add-to-cart-button {
+    background-color: gold;
+    color: black;
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    left: 5%;
+    right: 5%;
+    height: 50px;
+    border: none;
+    border-radius: 20px;
+
+    font-weight: 800;
+
+    @include desktop {
+      position: relative;
+      margin-top: 20px;
+      bottom: unset;
+      left: unset;
+      right: unset;
+      width: 100%;
+    }
+  }
 }

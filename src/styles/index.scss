@@ -52,7 +52,7 @@ label {
 
 .container {
   width: 95%;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -70,4 +70,8 @@ label {
   @include desktop {
     display: inherit;
   }
+}
+
+.lowercase {
+  text-transform: lowercase;
 }

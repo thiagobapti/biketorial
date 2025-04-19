@@ -34,9 +34,11 @@ export default async function PartPage(props: { params: paramsType }) {
         {state === STATE_ERROR && <div>Error...</div>}
         {state === STATE_DEFAULT && part !== undefined && (
           <div className={`${block}__part-wrapper`}>
-            <div>
-              Biketorial
-              <Link href="/builder">Builder</Link>
+            <div className={`${block}__part-header`}>
+              <div className={`${block}__header-title`}>
+                {part.label}&nbsp;
+                <span className="lowercase">{part.category_label}</span>
+              </div>
             </div>
             <div className={`${block}__part`}>
               <div className={`${block}__part-image-wrapper`}>
@@ -44,15 +46,17 @@ export default async function PartPage(props: { params: paramsType }) {
                   className={`${block}__part-image`}
                   src={`/parts/${part.id}.png`}
                   alt={part.label || ""}
-                  width={1536}
-                  height={1024}
+                  width={878}
+                  height={585}
                   priority
                 />
+                {part.description && (
+                  <div className={`${block}__part-description`}>
+                    {part.description}
+                  </div>
+                )}
               </div>
               <div className={`${block}__part-info`}>
-                <div>{part.category_label}</div>
-                <div>{part.label}</div>
-                <div>{part.price}</div>
                 <PartConfigurator part={part} />
               </div>
             </div>

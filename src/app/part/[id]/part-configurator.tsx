@@ -3,7 +3,10 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Category, Part, PurchaseItem } from "@/types";
 import cn from "classnames";
-import { handlePartSelectionWithPriceCalculation } from "@/util/misc";
+import {
+  formatAsDollar,
+  handlePartSelectionWithPriceCalculation,
+} from "@/util/misc";
 import "./part-configurator.scss";
 import { CartContext } from "@/contexts/cart";
 import { getGroupedParts } from "@/backend/store";
@@ -77,17 +80,19 @@ export function PartConfigurator({ part }: PartConfiguratorProps) {
 
   return (
     <div className={block}>
-      Price: {purchaseItem.price}
-      {categories &&
-        categories?.map((category: any) => (
-          <CategoryPartSelector
-            feature={category}
-            selectionChangeHandler={handlePartSelection}
-            key={category.id}
-          />
-        ))}
-      <button onClick={handleAddToCart} disabled={!purchaseItem.fulfilled}>
-        Add to cart
+      {categories?.map((category: any) => (
+        <CategoryPartSelector
+          feature={category}
+          selectionChangeHandler={handlePartSelection}
+          key={category.id}
+        />
+      ))}
+      <button
+        className={`${block}__add-to-cart-button`}
+        onClick={handleAddToCart}
+        disabled={!purchaseItem.fulfilled}
+      >
+        Add to cart for ${formatAsDollar(purchaseItem.price)}
       </button>
     </div>
   );

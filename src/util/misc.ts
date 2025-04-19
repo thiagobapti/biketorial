@@ -1,7 +1,7 @@
 import { Part, Restriction } from "@/types";
 
 export const formatAsDollar = (amount: number): string => {
-  return amount % 1 === 0 ? `$ ${amount}` : `$ ${amount.toFixed(2)}`;
+  return amount % 1 === 0 ? `${amount}` : `${amount.toFixed(2)}`;
 };
 
 export const collectAllRestrictions = (categories: any): Restriction[] => {

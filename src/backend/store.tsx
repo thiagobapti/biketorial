@@ -21,14 +21,13 @@ export async function getGroupedParts(idCategory?: string, idBuilder?: string) {
             'label', parts.label,
             'quantity_available', parts.quantity_available,
             'quantity_sold', parts.quantity_sold,
-            'base_price', parts.base_price,
             'price', parts.price,
+            'description', parts.description,
             'category_label', categories.label,
             'pricing', (
               SELECT json_agg(
                 jsonb_build_object(
                   'price', pricing.price,
-                  'base_price', pricing.base_price,
                   'id_related_part', pricing.id_related_part
                 )
               )

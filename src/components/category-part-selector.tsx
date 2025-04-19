@@ -36,8 +36,7 @@ export default function CategoryPartSelector({
                 [`${block}__part-price--highlight`]: part.customPrice,
               })}
             >
-              &nbsp;
-              {formatAsDollar(part.customPrice || part.price || 0)}
+              +&nbsp;{formatAsDollar(part.customPrice || part.price || 0)}
             </div>
           </div>
         ))}
