@@ -109,8 +109,8 @@ export default function BuilderPage() {
         <div className="container">
           <div className={`${block}__header-title`}>
             <ChevronRight
-              width={18}
-              height={18}
+              width={26}
+              height={26}
               strokeWidth={4}
               color="#e18f00"
             />{" "}

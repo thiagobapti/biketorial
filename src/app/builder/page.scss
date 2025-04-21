@@ -33,7 +33,7 @@ $block: "builder-page";
   &__part-header {
     // background-color: #363532;
     padding: 18px 0;
-    background-color: #2c2c2c;
+    // background-color: #2c2c2c;
     margin-bottom: 20px;
   }
 
@@ -48,7 +48,7 @@ $block: "builder-page";
     // margin-top: 20px;
 
     @include desktop {
-      font-size: 16px;
+      font-size: 26px;
       // margin-top: 40px;
     }
   }

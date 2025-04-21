@@ -8,14 +8,27 @@ import Image from "next/image";
 import cn from "classnames";
 import { formatAsDollar } from "@/util/misc";
 import bicycle from "@/assets/bicycle.svg";
+import { placeOrder } from "@/backend/store";
+import { useRouter } from "next/navigation";
 const block = "header";
 
 export default function Header() {
   const cartContext = useContext(CartContext);
+  const router = useRouter();
 
   const handleClearCart = () => {
     cartContext.updateItems([]);
     cartContext.setIsOpen(false);
+  };
+
+  const handleCheckout = async () => {
+    const success = await placeOrder(cartContext);
+
+    if (success) {
+      cartContext.updateItems([]);
+      cartContext.setIsOpen(false);
+      router.push("/");
+    }
   };
 
   return (
@@ -133,7 +146,7 @@ export default function Header() {
               <div className={`${block}__cart-drawer-actions`}>
                 <button
                   className={`${block}__cart-drawer-checkout-button`}
-                  onClick={() => alert("Proceeding to checkout...")}
+                  onClick={handleCheckout}
                 >
                   Proceed to Checkout
                 </button>

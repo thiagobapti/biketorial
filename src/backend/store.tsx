@@ -1,6 +1,6 @@
 "use server";
 
-import { Part } from "@/types";
+import { CartContext, Part, PurchaseItem } from "@/types";
 import { createClient } from "@vercel/postgres";
 
 export async function getGroupedParts(idCategory?: string, idBuilder?: string) {
@@ -108,6 +108,55 @@ export async function getParts(id?: string): Promise<Part[]> {
     // TODO: Check records keys vs type
     return result.rows as Part[];
   } catch (error: unknown) {
+    throw error;
+  } finally {
+    await client.end();
+  }
+}
+
+export async function placeOrder(order: CartContext) {
+  const client = createClient({
+    connectionString: process.env.POSTGRES_URL_NON_POOLING,
+  });
+
+  try {
+    await client.connect();
+
+    // Insert order and get order ID
+    const orderResult = await client.sql`
+      INSERT INTO orders (user_id, price)
+      VALUES (NULL, ${order.totalPrice})
+      RETURNING id
+    `;
+
+    const orderId = orderResult.rows[0].id;
+
+    // Process each item sequentially
+    for (const item of order.items) {
+      // Insert order item and get order item ID
+      const orderItemResult = await client.sql`
+        INSERT INTO order_items (id_order, id_builder)
+        VALUES (${orderId}, ${item.id_builder})
+        RETURNING id
+      `;
+
+      const orderItemId = orderItemResult.rows[0].id;
+
+      // Process each part sequentially
+      for (const part of item.parts) {
+        await client.sql`
+          INSERT INTO order_item_parts (id_part, id_order_item, price)
+          VALUES (${part.id}, ${orderItemId}, ${part.customPrice || part.price})
+        `;
+      }
+    }
+
+    return true;
+  } catch (error: unknown) {
+    console.error(
+      "[ placeOrder ]",
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   } finally {
     await client.end();
