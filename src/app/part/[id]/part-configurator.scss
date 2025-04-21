@@ -36,8 +36,12 @@ $block: "part-configurator";
     }
   }
 
+  &__cta-text {
+    position: relative;
+  }
+
   &__add-to-cart-button {
-    background-color: #e18e00;
+    background-color: #736e6e;
     color: black;
     position: fixed;
     bottom: 10px;
@@ -47,16 +51,73 @@ $block: "part-configurator";
     height: 50px;
     border: none;
     border-radius: 20px;
-
     font-weight: 800;
+
+    &:before {
+      border-radius: 20px;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: var(--fill-width, 0%);
+      transition: width 0.3s ease-in-out;
+      background: #e18e00;
+      clip-path: inset(0 0 0 0 round 20px 0 0 20px);
+    }
 
     @include desktop {
       position: relative;
-      margin-top: 20px;
+      margin-top: 10px;
       bottom: unset;
       left: unset;
       right: unset;
       width: 100%;
     }
+  }
+
+  &__loading-text {
+    font-weight: 700;
+    color: #e5c770;
+    margin-bottom: 6px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__loading-bar {
+    width: 100%;
+    height: 10px;
+    background-color: #4b4b4b;
+    border-radius: 4px;
+    height: 22px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      animation: skeleton-loading 1.5s infinite;
+    }
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }

@@ -1,5 +1,5 @@
 :root {
-  --body-background-color: #e7e5d8;
+  --body-background-color: #20201f;
 }
 
 html,
@@ -50,6 +50,13 @@ label {
   border: 0;
 }
 
+span {
+  font-family: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
 .container {
   width: 95%;
   max-width: 1200px;
@@ -74,4 +81,31 @@ label {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.button {
+  background-color: #736e6e;
+  color: #000;
+  font-weight: 800;
+  font-size: 15px;
+  height: 40px;
+  border: none;
+  border-radius: 20px;
+  padding: 2px 8px;
+  box-sizing: border-box;
+  position: relative;
+
+  &[data-orange-black] {
+    background-color: #e18e00;
+    color: #000;
+  }
+
+  &[data-yellow-black] {
+    background-color: #e5c770;
+    color: #000;
+  }
+
+  &[data-enabled="true"] {
+    cursor: pointer;
+  }
 }

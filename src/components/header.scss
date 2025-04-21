@@ -1,7 +1,7 @@
 $block: "header";
 
 .#{$block} {
-  background-color: #20201f;
+  // background-color: #20201f;
   color: #fff;
   height: 60px;
   position: fixed;
@@ -9,6 +9,10 @@ $block: "header";
   left: 0;
   right: 0;
   z-index: 1;
+
+  background-color: rgba(#20201f, 0.8);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 
   &__container {
     display: flex;
@@ -20,7 +24,7 @@ $block: "header";
   &__logo {
     font-size: 24px;
     font-weight: 800;
-    color: #e18e00;
+    color: #e5c770;
   }
 
   &__cart {

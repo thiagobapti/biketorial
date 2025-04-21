@@ -7,7 +7,7 @@ import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { PartConfigurator } from "./part-configurator";
 import { Part } from "@/types";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ClockAlert } from "lucide-react";
 import { formatAsDollar } from "@/util/misc";
 
 const block = "part-page";
@@ -39,8 +39,12 @@ export default async function PartPage(props: { params: paramsType }) {
             <div className={`${block}__part-header`}>
               <div className="container">
                 <div className={`${block}__header-title`}>
-                  {part.category_label}{" "}
-                  <ChevronRight width={20} height={20} strokeWidth={3} />{" "}
+                  <ChevronRight
+                    width={26}
+                    height={26}
+                    strokeWidth={4}
+                    color="#e18f00"
+                  />{" "}
                   {part.label}&nbsp;
                   <span className="lowercase">{part.category_label}</span>
                 </div>
@@ -56,6 +60,16 @@ export default async function PartPage(props: { params: paramsType }) {
                   height={585}
                   priority
                 />
+                {/* {part.description && (
+                  <div className={`${block}__part-description`}>
+                    <div className={`${block}__part-description-label`}>
+                      Description
+                    </div>
+                    {part.description}
+                  </div>
+                )} */}
+              </div>
+              <div className={`${block}__part-info`}>
                 {part.description && (
                   <div className={`${block}__part-description`}>
                     <div className={`${block}__part-description-label`}>
@@ -64,18 +78,32 @@ export default async function PartPage(props: { params: paramsType }) {
                     {part.description}
                   </div>
                 )}
-              </div>
-              <div className={`${block}__part-info`}>
                 <div className={`${block}__part-description`}>
                   <div className={`${block}__part-description-label`}>
                     Base price
                   </div>
                   ${formatAsDollar(part.price)}
                 </div>
-                <PartConfigurator
-                  className={`${block}__part-configurator`}
-                  part={part}
-                />
+                {(part?.quantity_available ?? 0) > 0 && (
+                  <PartConfigurator
+                    className={`${block}__part-configurator`}
+                    part={part}
+                  />
+                )}
+
+                {(part?.quantity_available ?? 0) <= 0 && (
+                  <div className={`${block}__part-description`}>
+                    <div
+                      className={cn(
+                        `${block}__part-description-label`,
+                        `${block}__part-description-label--red`
+                      )}
+                    >
+                      <ClockAlert width={20} height={20} strokeWidth={3} />
+                      Out of stock
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

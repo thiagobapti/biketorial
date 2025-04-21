@@ -19,7 +19,7 @@ type PartConfiguratorProps = {
 const block = "part-configurator";
 export function PartConfigurator({ part, className }: PartConfiguratorProps) {
   const cartContext = useContext(CartContext);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>();
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
     fulfilled: false,
     price: part.price,
@@ -84,6 +84,12 @@ export function PartConfigurator({ part, className }: PartConfiguratorProps) {
 
   return (
     <div className={cn(block, className)}>
+      {!categories && (
+        <div className={`${block}__loading`}>
+          <div className={`${block}__loading-text`}>Loading options...</div>
+          <div className={`${block}__loading-bar`}></div>
+        </div>
+      )}
       {categories?.map((category: any) => (
         <CategoryPartSelector
           feature={category}
@@ -91,13 +97,28 @@ export function PartConfigurator({ part, className }: PartConfiguratorProps) {
           key={category.id}
         />
       ))}
-      <button
-        className={`${block}__add-to-cart-button`}
-        onClick={handleAddToCart}
-        disabled={!purchaseItem.fulfilled}
-      >
-        Add to cart for ${formatAsDollar(purchaseItem.price)}
-      </button>
+      {categories && (
+        <button
+          className={`${block}__add-to-cart-button`}
+          onClick={handleAddToCart}
+          disabled={!purchaseItem.fulfilled}
+          data-enabled={purchaseItem.fulfilled}
+          style={
+            {
+              "--fill-width": `${
+                purchaseItem.parts?.length
+                  ? (purchaseItem?.parts?.length / (categories.length + 1)) *
+                    100
+                  : 0
+              }%`,
+            } as React.CSSProperties
+          }
+        >
+          <span className={`${block}__cta-text`}>
+            Buy for ${formatAsDollar(purchaseItem.price)}
+          </span>
+        </button>
+      )}
     </div>
   );
 }

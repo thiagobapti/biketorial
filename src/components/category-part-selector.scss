@@ -1,9 +1,7 @@
 $block: "category-part-selector";
 
 .#{$block} {
-  & + & {
-    margin-top: 20px;
-  }
+  margin-bottom: 20px;
 
   &__category-label {
     // background-color: #373737;

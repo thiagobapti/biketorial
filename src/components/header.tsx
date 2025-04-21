@@ -7,6 +7,7 @@ import { CartContext } from "@/contexts/cart";
 import Image from "next/image";
 import cn from "classnames";
 import { formatAsDollar } from "@/util/misc";
+import bicycle from "@/assets/bicycle.svg";
 const block = "header";
 
 export default function Header() {
@@ -20,7 +21,19 @@ export default function Header() {
   return (
     <div className={block}>
       <div className={`${block}__container container`}>
-        <div className={`${block}__logo`}>Biketorial</div>
+        <div className={`${block}__logo`}>
+          {/* <Image
+            src={bicycle}
+            alt="BikeTorial"
+            width={36}
+            height={36}
+            className={`${block}__logo-image`}
+          /> */}
+          Bike
+          <span className={`${block}__logo-span`} style={{ color: "#e18e00" }}>
+            torial
+          </span>
+        </div>
         <div
           className={cn(`${block}__cart`, {
             [`${block}__cart--active`]: cartContext.items.length > 0,
