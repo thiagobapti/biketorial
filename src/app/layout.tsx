@@ -4,6 +4,7 @@ import { montserrat } from "../styles/fonts";
 import Head from "next/head";
 import Header from "@/components/header";
 import { CartContextProvider } from "@/contexts/cart";
+import Modal from "@/components/modal";
 
 export const metadata: Metadata = {
   title: "Biketorial",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <CartContextProvider>
           <Header />
           {children}
+          <Modal />
         </CartContextProvider>
       </body>
     </html>

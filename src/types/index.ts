@@ -40,10 +40,12 @@ export type Restriction = {
 export type CartContext = {
   items: any[];
   totalPrice: number;
+  isOpen: boolean;
+  modalText: string;
   updateItems: (items: any[]) => void;
   append: (item: any) => void;
   remove: (item: any) => void;
-  isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   toggleCartDrawer: () => void;
+  setModalText: (text: string) => void;
 };

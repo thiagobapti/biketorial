@@ -164,6 +164,8 @@ $block: "builder-page";
 
   &__preview-image {
     border-radius: 20px;
+    width: 100%;
+    height: auto;
   }
   &__loading-text {
     font-weight: 700;

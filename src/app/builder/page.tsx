@@ -79,16 +79,20 @@ export default function BuilderPage() {
   };
 
   const handleGenerateImage = async () => {
-    const prompt =
-      "A realistic photo of a moss green step-through bicycle with a very low or absent top tube, designed for easy mounting. Full side view, professional photo studio with solid vibrant pink-red background (#ff2450), minimalist and clean";
+    if (purchaseItem === undefined || !purchaseItem.parts) return;
 
-    const result = await build(prompt);
+    cartContext.setModalText("AI is generating your bike...");
+
+    const result = await build({
+      partIds: purchaseItem.parts.map((part) => part.id),
+    });
     console.log(result);
 
     setPurchaseItem({
       ...purchaseItem,
       image: result.imageUrl,
     });
+    cartContext.setModalText("");
   };
 
   const handleEditPreview = () => {
@@ -195,7 +199,9 @@ export default function BuilderPage() {
                     data-orange-black
                     data-enabled
                   >
-                    <span className={`${block}__cta-text`}>Add to cart</span>
+                    <span className={`${block}__cta-text`}>
+                      Add to cart - ${formatAsDollar(purchaseItem.price)}
+                    </span>
                   </button>
                 )}
               </div>
@@ -210,13 +216,8 @@ export default function BuilderPage() {
                   className={`${block}__preview-image`}
                   src={purchaseItem.image}
                   alt="Bike"
-                  width={898}
-                  height={598}
-                  style={{
-                    objectFit: "contain",
-                    width: "100%",
-                    height: "100%",
-                  }}
+                  width={880}
+                  height={880}
                 />
               )}
             </div>
