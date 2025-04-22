@@ -10,10 +10,12 @@ import { formatAsDollar } from "@/util/misc";
 import bicycle from "@/assets/bicycle.svg";
 import { placeOrder } from "@/backend/store";
 import { useRouter } from "next/navigation";
+import { GlobalContext } from "@/contexts/global";
 const block = "header";
 
 export default function Header() {
   const cartContext = useContext(CartContext);
+  const globalContext = useContext(GlobalContext);
   const router = useRouter();
 
   const handleClearCart = () => {
@@ -22,11 +24,14 @@ export default function Header() {
   };
 
   const handleCheckout = async () => {
-    const success = await placeOrder(cartContext);
+    const placeOrderResult = await placeOrder(cartContext);
 
-    if (success) {
+    if (placeOrderResult) {
       cartContext.updateItems([]);
       cartContext.setIsOpen(false);
+      globalContext.setModalText(
+        "Order placed successfully! We'll get back to you soon."
+      );
       router.push("/");
     }
   };

@@ -5,6 +5,7 @@ import Head from "next/head";
 import Header from "@/components/header";
 import { CartContextProvider } from "@/contexts/cart";
 import Modal from "@/components/modal";
+import { GlobalContextProvider } from "@/contexts/global";
 
 export const metadata: Metadata = {
   title: "Biketorial",
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${montserrat.variable}`}>
-        <CartContextProvider>
-          <Header />
-          {children}
-          <Modal />
-        </CartContextProvider>
+        <GlobalContextProvider>
+          <CartContextProvider>
+            <Header />
+            {children}
+            <Modal />
+          </CartContextProvider>
+        </GlobalContextProvider>
       </body>
     </html>
   );

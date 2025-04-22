@@ -1,10 +1,13 @@
 "use server";
 
-import { CartContext, Part, PurchaseItem } from "@/types";
+import { CartContext, Category, Part, PurchaseItem } from "@/types";
 import { createClient } from "@vercel/postgres";
 
-export async function getGroupedParts(idCategory?: string, idBuilder?: string) {
-  if (!idCategory && !idBuilder) return false;
+export async function getGroupedParts(
+  idCategory?: string,
+  idBuilder?: string
+): Promise<Category[]> {
+  if (!idCategory && !idBuilder) return [];
 
   const client = createClient({
     connectionString: process.env.POSTGRES_URL_NON_POOLING,
@@ -67,13 +70,13 @@ export async function getGroupedParts(idCategory?: string, idBuilder?: string) {
         CASE WHEN ${idBuilder}::uuid IS NOT NULL THEN builder_categories.order::text ELSE categories.label END
     `;
 
-    return result.rows;
+    return result.rows as Category[];
   } catch (error: unknown) {
     console.error(
       "[ getGroupedParts ]",
       error instanceof Error ? error.message : String(error)
     );
-    return false;
+    return [];
   } finally {
     await client.end();
   }
@@ -122,7 +125,8 @@ export async function placeOrder(order: CartContext) {
   try {
     await client.connect();
 
-    // Insert order and get order ID
+    await client.sql`BEGIN;`;
+
     const orderResult = await client.sql`
       INSERT INTO orders (user_id, price)
       VALUES (NULL, ${order.totalPrice})
@@ -131,19 +135,16 @@ export async function placeOrder(order: CartContext) {
 
     const orderId = orderResult.rows[0].id;
 
-    // Process each item sequentially
     for (const item of order.items) {
-      // Insert order item and get order item ID
       const orderItemResult = await client.sql`
-        INSERT INTO order_items (id_order, id_builder)
-        VALUES (${orderId}, ${item.id_builder})
+        INSERT INTO order_items (id_order, id_builder, label)
+        VALUES (${orderId}, ${item.id_builder}, ${item.label})
         RETURNING id
       `;
 
       const orderItemId = orderItemResult.rows[0].id;
 
-      // Process each part sequentially
-      for (const part of item.parts) {
+      for (const part of item.parts || []) {
         await client.sql`
           INSERT INTO order_item_parts (id_part, id_order_item, price)
           VALUES (${part.id}, ${orderItemId}, ${part.customPrice || part.price})
@@ -151,8 +152,12 @@ export async function placeOrder(order: CartContext) {
       }
     }
 
-    return true;
+    await client.sql`COMMIT;`;
+
+    return orderId;
   } catch (error: unknown) {
+    await client.sql`ROLLBACK;`;
+
     console.error(
       "[ placeOrder ]",
       error instanceof Error ? error.message : String(error)

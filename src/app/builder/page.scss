@@ -125,6 +125,14 @@ $block: "builder-page";
     gap: 10px;
     flex-shrink: 0;
 
+    &--absolute {
+      position: absolute;
+
+      @include desktop {
+        position: relative;
+      }
+    }
+
     @include desktop {
       width: 300px;
     }

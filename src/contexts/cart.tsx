@@ -6,14 +6,12 @@ import { CartContext as CartContextType } from "@/types";
 export const CartContext = createContext<CartContextType>({
   items: [],
   totalPrice: 0,
-  modalText: "",
   updateItems: () => {},
   append: () => {},
   remove: () => {},
   isOpen: false,
   setIsOpen: () => {},
   toggleCartDrawer: () => {},
-  setModalText: () => {},
 });
 
 export const CartContextProvider = ({
@@ -24,9 +22,9 @@ export const CartContextProvider = ({
   const [items, setItems] = useState<any[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [modalText, _setModalText] = useState<string>("");
+
   useEffect(() => {
-    const storedItems = localStorage.getItem("cartItems");
+    const storedItems = localStorage.getItem("cart-items");
 
     if (storedItems) {
       const parsedItems = JSON.parse(storedItems);
@@ -34,6 +32,11 @@ export const CartContextProvider = ({
       calculateTotalPrice(parsedItems);
     }
   }, []);
+
+  const updateItems = (newItems: any[]) => {
+    setItems(newItems);
+    localStorage.setItem("cart-items", JSON.stringify(newItems));
+  };
 
   useEffect(() => {
     calculateTotalPrice(items);
@@ -46,11 +49,6 @@ export const CartContextProvider = ({
       total += item.customPrice || item.price || 0;
     }
     setTotalPrice(total);
-  };
-
-  const updateItems = (newItems: any[]) => {
-    setItems(newItems);
-    localStorage.setItem("cartItems", JSON.stringify(newItems));
   };
 
   const append = (item: any) => {
@@ -69,23 +67,17 @@ export const CartContextProvider = ({
     setIsOpen(!isOpen);
   };
 
-  const setModalText = (text: string) => {
-    _setModalText(text);
-  };
-
   return (
     <CartContext.Provider
       value={{
         items,
         totalPrice,
-        modalText,
         updateItems,
         append,
         remove,
         isOpen,
         setIsOpen,
         toggleCartDrawer,
-        setModalText,
       }}
     >
       {children}

@@ -7,6 +7,7 @@ import { Part } from "@/types";
 import ReloadButton from "./reload-button";
 import hero from "@/assets/hero.png";
 import { formatAsDollar } from "@/util/misc";
+import { ClockAlert } from "lucide-react";
 
 const block = "page";
 export default async function Page() {
@@ -79,14 +80,18 @@ export default async function Page() {
                         width={280}
                         height={180}
                       />
-                      <div>
+
+                      <div className={`${block}__part-info`}>
                         {!part.quantity_available && (
                           <div className={`${block}__part-sold-out`}>
+                            <ClockAlert
+                              width={15}
+                              height={15}
+                              strokeWidth={3}
+                            />
                             Sold Out
                           </div>
                         )}
-                      </div>
-                      <div className={`${block}__part-info`}>
                         <div className={`${block}__part-label`}>
                           {part.label}
                           <span className="lowercase">

@@ -1,7 +1,7 @@
 "use client";
 
 import "./page.scss";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import cn from "classnames";
 import { CartContext } from "@/contexts/cart";
 import {
@@ -13,13 +13,8 @@ import { build } from "@/backend/builder";
 import Image from "next/image";
 import CategoryPartSelector from "@/components/category-part-selector";
 import { ChevronRight } from "lucide-react";
+import { GlobalContext } from "@/contexts/global";
 const block = "builder-page";
-
-export type Restriction = {
-  id_part: string;
-  id_part_incompatible: string;
-  details: string | null;
-};
 
 export default function BuilderPage() {
   const [purchaseItem, setPurchaseItem] = useState<PurchaseItem>({
@@ -28,11 +23,8 @@ export default function BuilderPage() {
     label: "Custom Build",
     id_builder: "b1ac25e7-90e1-463b-9efd-fe075da00ea3",
   });
-  enum State {
-    Default = "default",
-    Error = "error",
-  }
-  const [state, setState] = useState<State>(State.Default);
+
+  const globalContext = useContext(GlobalContext);
   const cartContext = useContext(CartContext);
   const [categories, setCategories] = useState<Category[]>();
 
@@ -73,15 +65,10 @@ export default function BuilderPage() {
     });
   };
 
-  const handleAddToCart = () => {
-    cartContext.append(purchaseItem);
-    cartContext.toggleCartDrawer();
-  };
-
   const handleGenerateImage = async () => {
     if (purchaseItem === undefined || !purchaseItem.parts) return;
 
-    cartContext.setModalText("AI is generating your bike...");
+    globalContext.setWorkingText("AI is generating your bike...");
 
     const result = await build({
       partIds: purchaseItem.parts.map((part) => part.id),
@@ -92,7 +79,8 @@ export default function BuilderPage() {
       ...purchaseItem,
       image: result.imageUrl,
     });
-    cartContext.setModalText("");
+    globalContext.setWorkingText("");
+    globalContext.setModalText("");
   };
 
   const handleEditPreview = () => {
@@ -102,9 +90,15 @@ export default function BuilderPage() {
     });
   };
 
+  const handleAddToCart = useCallback(() => {
+    if (purchaseItem.fulfilled) {
+      cartContext.append(purchaseItem);
+      cartContext.toggleCartDrawer();
+    }
+  }, [purchaseItem, cartContext]);
+
   return (
     <div className={block}>
-      {" "}
       <div className={`${block}__part-header`}>
         <div className="container">
           <div className={`${block}__header-title`}>
@@ -119,110 +113,104 @@ export default function BuilderPage() {
         </div>
       </div>
       <div className={`${block}__container container`}>
-        {state === State.Error && (
-          <div className={`${block}__error`}>
-            <div className={`${block}__error-message`}>
-              Error loading builder
-            </div>
-          </div>
-        )}
-        {state === State.Default && (
-          <div className={`${block}__builder`}>
-            <div className={`${block}__toolbar-wrapper`}>
-              <div
-                className={cn(`${block}__toolbar`, {
-                  [`${block}__toolbar--visible`]: !purchaseItem.image,
-                })}
-              >
-                <div className={`${block}__label`}>Instructions</div>
-                <div className={`${block}__text`}>
-                  Mix and match parts to create your dream bike.
-                </div>
-
-                {!categories && (
-                  <div className={`${block}__loading`}>
-                    <div className={`${block}__loading-text`}>
-                      Loading options...
-                    </div>
-                    <div className={`${block}__loading-bar`}></div>
-                  </div>
-                )}
-
-                <div className={`${block}__toolbar-body`}>
-                  {categories?.map((feature: any) => (
-                    <CategoryPartSelector
-                      feature={feature}
-                      selectionChangeHandler={handlePartClick}
-                      key={feature.id}
-                    />
-                  ))}
-                </div>
-              </div>
-              <div className={`${block}__toolbar-actions`}>
-                {!purchaseItem.image && categories && (
-                  <button
-                    className={`${block}__toolbar-actions-button button`}
-                    disabled={!purchaseItem.fulfilled}
-                    onClick={handleGenerateImage}
-                    data-enabled={purchaseItem.fulfilled}
-                    style={
-                      {
-                        "--fill-width": `${
-                          categories.length > 0 && purchaseItem.parts?.length
-                            ? (purchaseItem?.parts?.length /
-                                categories.length) *
-                              100
-                            : 0
-                        }%`,
-                      } as React.CSSProperties
-                    }
-                  >
-                    <span className={`${block}__cta-text`}>
-                      Preview - ${formatAsDollar(purchaseItem.price)}
-                    </span>
-                  </button>
-                )}
-                {purchaseItem.image && categories && (
-                  <button
-                    className={`${block}__toolbar-actions-button ${block}__toolbar-actions-button--edit button`}
-                    onClick={handleEditPreview}
-                    data-yellow-black
-                  >
-                    <span className={`${block}__cta-text`}>Edit</span>
-                  </button>
-                )}
-                {purchaseItem.image && categories && (
-                  <button
-                    className={`${block}__toolbar-actions-button button`}
-                    onClick={handleAddToCart}
-                    disabled={!purchaseItem.fulfilled}
-                    data-orange-black
-                    data-enabled
-                  >
-                    <span className={`${block}__cta-text`}>
-                      Add to cart - ${formatAsDollar(purchaseItem.price)}
-                    </span>
-                  </button>
-                )}
-              </div>
-            </div>
+        <div className={`${block}__builder`}>
+          <div
+            className={cn(`${block}__toolbar-wrapper`, {
+              [`${block}__toolbar-wrapper--absolute`]: purchaseItem.image,
+            })}
+          >
             <div
-              className={cn(`${block}__preview`, {
-                [`${block}__preview--visible`]: purchaseItem.image,
+              className={cn(`${block}__toolbar`, {
+                [`${block}__toolbar--visible`]: !purchaseItem.image,
               })}
             >
-              {purchaseItem.image && (
-                <Image
-                  className={`${block}__preview-image`}
-                  src={purchaseItem.image}
-                  alt="Bike"
-                  width={880}
-                  height={880}
-                />
+              <div className={`${block}__label`}>Instructions</div>
+              <div className={`${block}__text`}>
+                Mix and match parts to create your dream bike.
+              </div>
+
+              {!categories && (
+                <div className={`${block}__loading`}>
+                  <div className={`${block}__loading-text`}>
+                    Loading options...
+                  </div>
+                  <div className={`${block}__loading-bar`}></div>
+                </div>
+              )}
+
+              <div className={`${block}__toolbar-body`}>
+                {categories?.map((feature: any) => (
+                  <CategoryPartSelector
+                    feature={feature}
+                    selectionChangeHandler={handlePartClick}
+                    key={feature.id}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className={`${block}__toolbar-actions`}>
+              {!purchaseItem.image && categories && (
+                <button
+                  className={`${block}__toolbar-actions-button button`}
+                  disabled={!purchaseItem.fulfilled}
+                  onClick={handleGenerateImage}
+                  data-enabled={purchaseItem.fulfilled}
+                  style={
+                    {
+                      "--fill-width": `${
+                        categories.length > 0 && purchaseItem.parts?.length
+                          ? (purchaseItem?.parts?.length / categories.length) *
+                            100
+                          : 0
+                      }%`,
+                    } as React.CSSProperties
+                  }
+                >
+                  <span className={`${block}__cta-text`}>
+                    Preview - ${formatAsDollar(purchaseItem.price)}
+                  </span>
+                </button>
+              )}
+              {purchaseItem.image && categories && (
+                <button
+                  className={`${block}__toolbar-actions-button ${block}__toolbar-actions-button--edit button`}
+                  onClick={handleEditPreview}
+                  data-yellow-black
+                >
+                  <span className={`${block}__cta-text`}>Edit</span>
+                </button>
+              )}
+              {purchaseItem.image && categories && (
+                <button
+                  className={`${block}__toolbar-actions-button button`}
+                  onClick={handleAddToCart}
+                  disabled={!purchaseItem.fulfilled}
+                  data-orange-black
+                  data-enabled
+                >
+                  <span className={`${block}__cta-text`}>
+                    Add to cart - ${formatAsDollar(purchaseItem.price)}
+                  </span>
+                </button>
               )}
             </div>
           </div>
-        )}
+          <div
+            className={cn(`${block}__preview`, {
+              [`${block}__preview--visible`]: purchaseItem.image,
+            })}
+          >
+            {purchaseItem.image && (
+              <Image
+                className={`${block}__preview-image`}
+                src={purchaseItem.image}
+                alt="Bike"
+                width={880}
+                height={880}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

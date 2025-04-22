@@ -3,7 +3,7 @@
 import { ChevronLeft, ShoppingCart } from "lucide-react";
 import "./modal.scss";
 import { useContext, useState } from "react";
-import { CartContext } from "@/contexts/cart";
+import { GlobalContext } from "@/contexts/global";
 import Image from "next/image";
 import cn from "classnames";
 import { formatAsDollar } from "@/util/misc";
@@ -11,12 +11,21 @@ import bicycle from "@/assets/bicycle.svg";
 const block = "modal";
 
 export default function Modal() {
-  const cartContext = useContext(CartContext);
-
+  const globalContext = useContext(GlobalContext);
   return (
-    cartContext.modalText && (
+    (globalContext.modalText || globalContext.workingText) && (
       <div className={block}>
-        <div className={`${block}__modal-text`}>{cartContext.modalText}</div>
+        {globalContext.workingText && (
+          <div className={`${block}__working`}>{globalContext.workingText}</div>
+        )}
+        {globalContext.modalText && (
+          <div className={`${block}__modal`}>
+            {globalContext.modalText}
+            <button onClick={() => globalContext.setModalText("")}>
+              Close
+            </button>
+          </div>
+        )}
       </div>
     )
   );

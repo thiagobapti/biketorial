@@ -38,14 +38,19 @@ export type Restriction = {
 };
 
 export type CartContext = {
-  items: any[];
+  items: PurchaseItem[];
   totalPrice: number;
   isOpen: boolean;
-  modalText: string;
-  updateItems: (items: any[]) => void;
-  append: (item: any) => void;
-  remove: (item: any) => void;
+  updateItems: (items: PurchaseItem[]) => void;
+  append: (item: PurchaseItem) => void;
+  remove: (item: PurchaseItem) => void;
   setIsOpen: (isOpen: boolean) => void;
   toggleCartDrawer: () => void;
+};
+
+export type GlobalContext = {
+  modalText: string;
+  workingText: string;
   setModalText: (text: string) => void;
+  setWorkingText: (text: string) => void;
 };
