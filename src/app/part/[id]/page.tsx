@@ -1,8 +1,5 @@
-// "use client";
-
 import Image from "next/image";
 import "./page.scss";
-import Link from "next/link";
 import { getParts } from "@/backend/store";
 import cn from "classnames";
 import { PartConfigurator } from "./part-configurator";
@@ -10,10 +7,9 @@ import { Part } from "@/types";
 import { ChevronRight, ClockAlert } from "lucide-react";
 import { formatAsDollar } from "@/util/misc";
 
-const block = "part-page";
-
 export type paramsType = Promise<{ id: string }>;
 
+const block = "part-page";
 export default async function PartPage(props: { params: paramsType }) {
   const STATE_DEFAULT = "default";
   const STATE_ERROR = "error";
@@ -60,14 +56,6 @@ export default async function PartPage(props: { params: paramsType }) {
                   height={585}
                   priority
                 />
-                {/* {part.description && (
-                  <div className={`${block}__part-description`}>
-                    <div className={`${block}__part-description-label`}>
-                      Description
-                    </div>
-                    {part.description}
-                  </div>
-                )} */}
               </div>
               <div className={`${block}__part-info`}>
                 {part.description && (

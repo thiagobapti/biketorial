@@ -4,7 +4,6 @@ $block: "category-part-selector";
   margin-bottom: 20px;
 
   &__category-label {
-    // background-color: #373737;
     font-weight: 800;
     color: #e5c770;
   }
@@ -12,8 +11,6 @@ $block: "category-part-selector";
   &__parts {
     display: flex;
     flex-direction: column;
-    // flex-wrap: wrap;
-    // justify-content: space-between;
     margin-top: 8px;
   }
 

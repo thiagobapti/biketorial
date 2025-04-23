@@ -2,12 +2,10 @@
 
 import { ChevronLeft, ShoppingCart } from "lucide-react";
 import "./header.scss";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { CartContext } from "@/contexts/cart";
-import Image from "next/image";
 import cn from "classnames";
 import { formatAsDollar } from "@/util/misc";
-import bicycle from "@/assets/bicycle.svg";
 import { placeOrder } from "@/backend/store";
 import { useRouter } from "next/navigation";
 import { GlobalContext } from "@/contexts/global";

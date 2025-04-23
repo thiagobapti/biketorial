@@ -7,20 +7,16 @@ $block: "part-page";
   padding-bottom: 80px;
   overflow-y: hidden;
   min-height: 100vh;
-  // border: dashed 2px red;
 
   &__container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    // border: solid 2px #373737;
     flex-wrap: wrap;
   }
 
   &__part-header {
-    // background-color: #363532;
     padding: 20px 0;
-    // background-color: #2c2c2c;
     margin-bottom: 20px;
   }
 
@@ -32,11 +28,8 @@ $block: "part-page";
     flex-direction: row;
     align-items: center;
 
-    // margin-top: 20px;
-
     @include desktop {
       font-size: 26px;
-      // margin-top: 40px;
     }
   }
 
@@ -45,43 +38,27 @@ $block: "part-page";
     flex-direction: column;
     background-color: #20201f;
     border-radius: 8px;
-    // padding: 6px;
-    // margin-top: 20px;
     align-items: flex-start;
 
     @include desktop {
-      // margin-top: 30px;
       flex-direction: row;
     }
   }
 
   &__part-image-wrapper {
     flex: 1;
-
-    // background-color: #20201f;
-    // margin: 20px 0 20px 20px;
     border-radius: 8px;
-    // padding: 10px 10px 0px 10px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
-
-    @include desktop {
-      // padding: 10px 10px 10px 10px;
-    }
   }
 
   &__part-description {
     font-size: 16px;
     font-weight: 500;
     color: #e7e5d8;
-    // margin-top: 10px;
 
     & + & {
       margin-top: 20px;
-    }
-
-    @include desktop {
-      // margin-top: 20px;
     }
   }
 
@@ -101,12 +78,8 @@ $block: "part-page";
 
   &__part-info {
     width: 100%;
-    // background-color: #373737;
-    // margin: 20px 0 20px 20px;
     border-radius: 8px;
     padding: 12px 10px 10px 10px;
-    // margin-top: 20px;
-
     border-top-right-radius: 0;
     border-top-left-radius: 0;
 
@@ -125,9 +98,6 @@ $block: "part-page";
   &__part-image {
     width: 100%;
     height: auto;
-    // height: 100%;
-    // object-fit: cover;
     border-radius: 6px;
-    // margin-bottom: 14px;
   }
 }

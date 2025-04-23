@@ -73,7 +73,6 @@ export default function BuilderPage() {
     const result = await generateBuildImage(
       purchaseItem.parts.map((part) => part.id)
     );
-    console.log(result);
 
     setPurchaseItem({
       ...purchaseItem,

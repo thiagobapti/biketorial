@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.4 (Homebrew)
 
--- Started on 2025-04-21 22:26:47 -03
+-- Started on 2025-04-22 23:00:10 -03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -264,6 +264,20 @@ d2f0f16f-4eaf-43bf-aa53-64f0a65da971	6ec94f80-4158-4a7d-a516-19450ce3d402	52
 cb1efd19-8d4e-4fff-a69b-c69936fad548	6ec94f80-4158-4a7d-a516-19450ce3d402	14
 d2f0f16f-4eaf-43bf-aa53-64f0a65da971	c03a5b6f-8ae6-4c69-9c87-c993025b457f	52
 2dc230fb-ad65-4d19-b14c-7bdc2e288ea6	c03a5b6f-8ae6-4c69-9c87-c993025b457f	0
+8dfc6957-dc91-4f0a-8a98-ca752185c1c2	ea126736-e1bc-4398-bbc0-28fd8466d354	130
+20df67d7-e86a-4738-9490-9429589f12e0	ea126736-e1bc-4398-bbc0-28fd8466d354	0
+84adc1e1-ff74-4b7c-ac28-049709724a99	ea126736-e1bc-4398-bbc0-28fd8466d354	30
+b464fe24-ad1a-4af6-bfac-60113983b719	ea126736-e1bc-4398-bbc0-28fd8466d354	80
+4d2be2fb-ff6a-4b06-8058-163d425a4efe	ea126736-e1bc-4398-bbc0-28fd8466d354	0
+cb1efd19-8d4e-4fff-a69b-c69936fad548	ea126736-e1bc-4398-bbc0-28fd8466d354	43
+d2f0f16f-4eaf-43bf-aa53-64f0a65da971	42ba686e-9d14-4f52-920f-443533730046	52
+4d2be2fb-ff6a-4b06-8058-163d425a4efe	42ba686e-9d14-4f52-920f-443533730046	0
+8dfc6957-dc91-4f0a-8a98-ca752185c1c2	2817a744-c7c2-4493-bd90-cb3f4228fbb3	130
+20df67d7-e86a-4738-9490-9429589f12e0	2817a744-c7c2-4493-bd90-cb3f4228fbb3	0
+fac8d0e7-b1b6-4757-ae42-f7bf49ae23e2	2817a744-c7c2-4493-bd90-cb3f4228fbb3	50
+b464fe24-ad1a-4af6-bfac-60113983b719	2817a744-c7c2-4493-bd90-cb3f4228fbb3	80
+4d2be2fb-ff6a-4b06-8058-163d425a4efe	2817a744-c7c2-4493-bd90-cb3f4228fbb3	0
+51d0e8be-8e40-49fe-8c63-3f2fa74a4bb7	2817a744-c7c2-4493-bd90-cb3f4228fbb3	68
 \.
 
 
@@ -277,6 +291,9 @@ COPY public.order_items (id_order, id_builder, id, label) FROM stdin;
 00709bba-673d-4736-badb-b0d1eb19d850	b1ac25e7-90e1-463b-9efd-fe075da00ea3	4db6b7a7-0dba-4fe6-944e-e6c34a33c2f7	\N
 edddf187-8354-4284-b5ee-1d4cc911e927	b1ac25e7-90e1-463b-9efd-fe075da00ea3	6ec94f80-4158-4a7d-a516-19450ce3d402	Custom Build
 12caa9c3-0ff1-488f-9957-2682827e6231	\N	c03a5b6f-8ae6-4c69-9c87-c993025b457f	Wheels
+aa4a85b3-7ba3-4ef7-a814-f862bb3605ee	b1ac25e7-90e1-463b-9efd-fe075da00ea3	ea126736-e1bc-4398-bbc0-28fd8466d354	Custom Build
+45b1dfc6-7658-4559-b5c6-fac9241df8c2	\N	42ba686e-9d14-4f52-920f-443533730046	Wheels
+f4dd056e-0b3e-44f3-b321-f5c7d29c4d86	b1ac25e7-90e1-463b-9efd-fe075da00ea3	2817a744-c7c2-4493-bd90-cb3f4228fbb3	Custom Build
 \.
 
 
@@ -291,6 +308,9 @@ COPY public.orders (id, user_id, price) FROM stdin;
 b6831f23-6692-49cd-b63d-686d321a722f	\N	166
 edddf187-8354-4284-b5ee-1d4cc911e927	\N	166
 12caa9c3-0ff1-488f-9957-2682827e6231	\N	52
+aa4a85b3-7ba3-4ef7-a814-f862bb3605ee	\N	283
+45b1dfc6-7658-4559-b5c6-fac9241df8c2	\N	52
+f4dd056e-0b3e-44f3-b321-f5c7d29c4d86	\N	328
 \.
 
 
@@ -323,8 +343,8 @@ bd2ca11d-b0bc-4afb-9677-a87dac15b0e0	325ecb22-f5ce-47e0-bc26-301d245669c8	Blue	1
 2dc230fb-ad65-4d19-b14c-7bdc2e288ea6	fa156a7d-014b-4201-8a87-4b886c74e46a	Black	1	\N	0	f	\N
 cb1efd19-8d4e-4fff-a69b-c69936fad548	cd6c77f1-43b8-42f0-8d94-1ae37b95b797	Single-speed	7	0	43	f	Simple, reliable, and low-maintenance—the single-speed chain is perfect for urban bikes and minimal setups. Built for durability and smooth engagement, it delivers consistent performance without the complexity of gears.
 51d0e8be-8e40-49fe-8c63-3f2fa74a4bb7	cd6c77f1-43b8-42f0-8d94-1ae37b95b797	8-speed	8	0	68	f	Optimized for smooth shifting and efficiency across multiple gears, the 8-speed chain is ideal for riders who value flexibility. It's compatible with a wide range of drivetrains and built to handle diverse riding conditions.
-c5a7cddd-470f-4098-8e53-9202706d33b1	2263b1b2-c10b-4436-87fd-1392caf5e329	Step-through	3	0	65	f	The step-through frame combines classic styling with everyday practicality. Its low top tube allows for easy mounting and dismounting, perfect for city riders, commuters, and anyone seeking a comfortable, upright ride.
-5056a5c9-d16d-4916-a55c-eb5c17082627	2263b1b2-c10b-4436-87fd-1392caf5e329	Diamond	0	0	58	f	A timeless design trusted by cyclists worldwide, the diamond frame is known for its strength, rigidity, and efficiency. Whether you're cruising roads or tackling moderate trails, this geometry delivers balanced performance and durability.
+c5a7cddd-470f-4098-8e53-9202706d33b1	2263b1b2-c10b-4436-87fd-1392caf5e329	Step-through	0	0	65	f	The step-through frame combines classic styling with everyday practicality. Its low top tube allows for easy mounting and dismounting, perfect for city riders, commuters, and anyone seeking a comfortable, upright ride.
+5056a5c9-d16d-4916-a55c-eb5c17082627	2263b1b2-c10b-4436-87fd-1392caf5e329	Diamond	3	0	58	f	A timeless design trusted by cyclists worldwide, the diamond frame is known for its strength, rigidity, and efficiency. Whether you're cruising roads or tackling moderate trails, this geometry delivers balanced performance and durability.
 b00217d2-4f33-4d61-b3fc-fd93e79478d0	658f923d-c7b5-4a81-8c89-af87520e399b	Mountain	5	8	46	t	Built tough for the demands of off-road riding, mountain wheels offer durability, grip, and shock absorption. Whether you're climbing rocky trails or descending steep slopes, they deliver reliable traction and control.
 fac8d0e7-b1b6-4757-ae42-f7bf49ae23e2	a644b9c0-2186-4426-ad56-d6902dc8a072	Matte	1	0	35	f	\N
 591e19c0-adfb-4df1-a83a-7980097d6ee8	fa156a7d-014b-4201-8a87-4b886c74e46a	Blue	1	\N	20	f	\N
@@ -576,7 +596,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON SEQU
 ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON TABLES TO neon_superuser WITH GRANT OPTION;
 
 
--- Completed on 2025-04-21 22:27:02 -03
+-- Completed on 2025-04-22 23:00:24 -03
 
 --
 -- PostgreSQL database dump complete

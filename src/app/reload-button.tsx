@@ -1,5 +1,13 @@
 "use client";
 
 export default function ReloadButton() {
-  return <button onClick={() => window.location.reload()}>Reload</button>;
+  return (
+    <button
+      className="button"
+      data-yellow-black
+      onClick={() => window.location.reload()}
+    >
+      Reload
+    </button>
+  );
 }

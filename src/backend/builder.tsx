@@ -2,7 +2,6 @@
 
 import { Part } from "@/types";
 import { createClient } from "@vercel/postgres";
-
 import OpenAI from "openai";
 
 export async function generateBuildImage(partIds: string[]): Promise<{
