@@ -34,6 +34,7 @@ export async function generateBuildImage(partIds: string[]): Promise<{
     `;
 
     const parts = result.rows as Part[];
+
     let partsPrompt = "";
     parts.forEach((part) => {
       partsPrompt += ` ${part.category_label}: ${part.label},`;
@@ -61,8 +62,6 @@ export async function generateBuildImage(partIds: string[]): Promise<{
         prompt: basePrompt,
         size: "1024x1024",
       });
-
-      console.log("Image generated:", response.data[0].url);
 
       return {
         success: true,
