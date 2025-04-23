@@ -99,7 +99,7 @@ export default async function Page() {
                           </span>
                         </div>
                         <div className={`${block}__part-price`}>
-                          From ${formatAsDollar(part.price)}
+                          from ${formatAsDollar(part.price)}
                         </div>
                       </div>
                       <Link

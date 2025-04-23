@@ -5,11 +5,10 @@ import { createClient } from "@vercel/postgres";
 
 import OpenAI from "openai";
 
-type Props = {
-  partIds: string[];
-};
-
-export async function build({ partIds }: Props) {
+export async function generateBuildImage(partIds: string[]): Promise<{
+  success: boolean;
+  imageUrl: string;
+}> {
   const client = createClient({
     connectionString: process.env.POSTGRES_URL_NON_POOLING,
   });
@@ -17,7 +16,6 @@ export async function build({ partIds }: Props) {
     await client.connect();
 
     const idList = partIds.join(",");
-
     const result = await client.sql`
       SELECT
         parts.label,
@@ -35,21 +33,23 @@ export async function build({ partIds }: Props) {
         parts.quantity_sold DESC
     `;
 
-    let basePrompt = "";
-    // "Let's create an image representing a real bicycle built with the following parts:";
-
     const parts = result.rows as Part[];
-
+    let partsPrompt = "";
     parts.forEach((part) => {
-      basePrompt += ` ${part.category_label}: ${part.label},`;
+      partsPrompt += ` ${part.category_label}: ${part.label},`;
     });
 
-    basePrompt =
-      "Professional photo of an bicycle built with the following parts:" +
-      basePrompt;
-
-    basePrompt +=
-      "The image will be used to showcase this bike for sale on a dark modern website. I want a dark gray background(rgb(32 32 31)) preferably solid on all four edges so I can seamlesly embed this image on a dark background. Give me 20% of margin on the top and bottom and on the sides.";
+    const intro =
+      "Ultra-professional studio photograph of a custom-built bicycle featuring the following parts:";
+    const background =
+      "Use a solid dark gray background (rgb(32, 32, 31)) covering all four edges, to ensure seamless embedding into a modern dark-themed website. No gradients, no shadows beyond the bike.";
+    const layout =
+      "Frame the bicycle with clean 20% padding on all sides (top, bottom, left, right) to provide visual breathing space and avoid cropping issues.";
+    const lighting =
+      "Use high-end studio lighting to highlight the bike’s contours and material finish, ensuring excellent detail without harsh reflections.";
+    const camera =
+      "Shoot at a slightly low angle with a wide lens for a dynamic, premium product feel. Full bike must be fully visible in-frame.";
+    const basePrompt = `${intro} ${partsPrompt} ${background} ${layout} ${lighting} ${camera}`;
 
     try {
       const client = new OpenAI({
@@ -66,7 +66,7 @@ export async function build({ partIds }: Props) {
 
       return {
         success: true,
-        imageUrl: response.data[0].url,
+        imageUrl: response.data[0].url || "",
       };
     } catch (error) {
       throw error;

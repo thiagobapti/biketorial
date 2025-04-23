@@ -9,7 +9,7 @@ import {
   formatAsDollar,
 } from "@/util/misc";
 import { Category, PurchaseItem } from "@/types";
-import { build } from "@/backend/builder";
+import { generateBuildImage } from "@/backend/builder";
 import Image from "next/image";
 import CategoryPartSelector from "@/components/category-part-selector";
 import { ChevronRight } from "lucide-react";
@@ -68,11 +68,11 @@ export default function BuilderPage() {
   const handleGenerateImage = async () => {
     if (purchaseItem === undefined || !purchaseItem.parts) return;
 
-    globalContext.setWorkingText("AI is generating your bike...");
+    globalContext.setWorkingText("Wait until the AI model builds your bike");
 
-    const result = await build({
-      partIds: purchaseItem.parts.map((part) => part.id),
-    });
+    const result = await generateBuildImage(
+      purchaseItem.parts.map((part) => part.id)
+    );
     console.log(result);
 
     setPurchaseItem({

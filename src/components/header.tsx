@@ -24,14 +24,17 @@ export default function Header() {
   };
 
   const handleCheckout = async () => {
+    globalContext.setWorkingText("Placing order");
     const placeOrderResult = await placeOrder(cartContext);
 
     if (placeOrderResult) {
       cartContext.updateItems([]);
       cartContext.setIsOpen(false);
+      globalContext.setWorkingText("");
       globalContext.setModalText(
         "Order placed successfully! We'll get back to you soon."
       );
+
       router.push("/");
     }
   };
@@ -40,17 +43,8 @@ export default function Header() {
     <div className={block}>
       <div className={`${block}__container container`}>
         <div className={`${block}__logo`}>
-          {/* <Image
-            src={bicycle}
-            alt="BikeTorial"
-            width={36}
-            height={36}
-            className={`${block}__logo-image`}
-          /> */}
           Bike
-          <span className={`${block}__logo-span`} style={{ color: "#e18e00" }}>
-            torial
-          </span>
+          <span className={`${block}__logo-span`}>torial</span>
         </div>
         <div
           className={cn(`${block}__cart`, {

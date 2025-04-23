@@ -117,7 +117,7 @@ export async function getParts(id?: string): Promise<Part[]> {
   }
 }
 
-export async function placeOrder(order: CartContext) {
+export async function placeOrder(order: CartContext): Promise<string> {
   const client = createClient({
     connectionString: process.env.POSTGRES_URL_NON_POOLING,
   });

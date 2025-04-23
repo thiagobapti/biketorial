@@ -16,12 +16,19 @@ export default function Modal() {
     (globalContext.modalText || globalContext.workingText) && (
       <div className={block}>
         {globalContext.workingText && (
-          <div className={`${block}__working`}>{globalContext.workingText}</div>
+          <div className={`${block}__working`}>
+            <span className={`${block}__spinner`}></span>
+            {globalContext.workingText}
+          </div>
         )}
         {globalContext.modalText && (
-          <div className={`${block}__modal`}>
+          <div className={`${block}__message`}>
             {globalContext.modalText}
-            <button onClick={() => globalContext.setModalText("")}>
+            <button
+              className={`${block}__close button`}
+              data-black-yellow
+              onClick={() => globalContext.setModalText("")}
+            >
               Close
             </button>
           </div>

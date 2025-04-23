@@ -24,7 +24,6 @@ body {
 
 html,
 body {
-  @include thin-scrollbar;
   max-width: 100vw;
   overflow-x: hidden;
 }
@@ -63,22 +62,6 @@ span {
   margin: 0 auto;
 }
 
-.mobile {
-  display: inherit;
-
-  @include desktop {
-    display: none;
-  }
-}
-
-.desktop {
-  display: none;
-
-  @include desktop {
-    display: inherit;
-  }
-}
-
 .lowercase {
   text-transform: lowercase;
 }
@@ -103,6 +86,11 @@ span {
   &[data-yellow-black] {
     background-color: #e5c770;
     color: #000;
+  }
+
+  &[data-black-yellow] {
+    background-color: #181818;
+    color: #e5c770;
   }
 
   &[data-enabled="true"] {

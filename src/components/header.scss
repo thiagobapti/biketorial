@@ -1,7 +1,6 @@
 $block: "header";
 
 .#{$block} {
-  // background-color: #20201f;
   color: #fff;
   height: 60px;
   position: fixed;
@@ -9,7 +8,6 @@ $block: "header";
   left: 0;
   right: 0;
   z-index: 1;
-
   background-color: rgba(#20201f, 0.8);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -27,17 +25,17 @@ $block: "header";
     color: #e5c770;
   }
 
+  &__logo-span {
+    color: #e18e00;
+  }
+
   &__cart {
     font-size: 16px;
     font-weight: 600;
     background-color: #e18e00;
-
-    // border-radius: 12px;
-    // height: 26px;
     display: flex;
     justify-content: center;
     align-items: center;
-    // padding-left: 5px;
     border: none;
 
     position: fixed;
@@ -47,24 +45,12 @@ $block: "header";
     width: 100px;
 
     &--active {
-      // background-color: black;
-      // border: solid 4px black;
       color: #000;
-
-      &:hover {
-        // background-color: gold;
-        // border: solid 1px red;
-        // scale: 1.05;
-      }
     }
   }
 
   &__cart-icon {
     color: #000;
-
-    // &--active {
-    //   color: #e18e00;
-    // }
   }
 
   &__cart-count {
@@ -85,7 +71,6 @@ $block: "header";
     display: flex;
     justify-content: center;
     align-items: center;
-    // margin-left: 8px;
   }
 
   &__cart-drawer {
@@ -94,7 +79,6 @@ $block: "header";
     top: 0;
     left: 0;
     right: 0;
-    z-index: 100;
     height: 100vh;
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
